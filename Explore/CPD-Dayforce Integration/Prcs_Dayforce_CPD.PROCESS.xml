@@ -7,7 +7,7 @@
       <types1:Description>Orchestrator: Dayforce to CPD employee integration (Functional Design &amp; API Build Guide v1.0)</types1:Description>
       <types1:AppliesTo/>
       <types1:Tags/>
-      <types1:VersionLabel>2.0</types1:VersionLabel>
+      <types1:VersionLabel>3.0</types1:VersionLabel>
       <types1:State>CURRENT</types1:State>
       <types1:ProcessGroup/>
       <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
@@ -22,251 +22,93 @@
                   displayName="Prcs_Dayforce_CPD"
                   name="Prcs_Dayforce_CPD"
                   overrideAPIName="false">
-            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd">
-               <parameter name="LastRunTimestamp" direction="in" type="string" description="Timestamp of the previous successful scheduled run. Empty on first run. See notes re: persistence."/>
-               <parameter name="CurrentRunTimestamp" direction="out" type="string" description="Persist this as next run's LastRunTimestamp"/>
-            </parameterSet>
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Keeps CPD's person, contract, and phone records synchronized with Dayforce on a near-real-time basis, using an idempotent search-then-create-or-update pattern (Functional Design &amp; API Build Guide v1.0, section 2). Scheduled every ~15 minutes per build guide 4.16.</description>
+            <description>Keeps CPD's person, contract, and phone records synchronized with Dayforce on a near-real-time basis, using an idempotent search-then-create-or-update pattern (Functional Design &amp; API Build Guide v1.0, section 2). Scheduled every ~15 minutes per build guide 4.16 (Schedule object created separately in IICS Administrator - not part of this Explore export).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
-            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0. See README_IICS_BUILD_NOTES.md at the repo root for: the XML-schema caveats that apply to every process in this build (this file has only ever been validated against one genuinely trivial start/end example, not a populated one - re-verify all node types in Process Designer before deploying); the full Open Items list carried over from the design doc (CPD hostname, VINCI ID EmployeeProperties XRefCode, org-unit cross-reference table, phone type code mapping, CPD auth mechanism, error-alert recipients); and operational notes on LastRunTimestamp persistence and the Schedule object (build guide 4.16), which lives in IICS Administrator and is not part of this export package.
+            <input>
+               <parameter description="Timestamp of the previous successful scheduled run. Empty on first run - see notes re: persistence." name="in_LastRunTimestamp" required="false" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+               <parameter description="Dayforce API username (secure parameter)" name="in_DayforceUsername" required="true" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+               <parameter description="Dayforce API password (secure parameter)" name="in_DayforcePassword" required="true" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+               <parameter description="CPD bearer token (secure parameter) - see notes on CPD auth mechanism being unconfirmed" name="in_CpdToken" required="true" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+            </input>
+            <output>
+               <field description="Persist this as next run's in_LastRunTimestamp" name="out_CurrentRunTimestamp" type="string">
+                  <options><option name="required">false</option></options>
+               </field>
+            </output>
+            <tempFields>
+               <field description="" name="tmp_access_token" type="string"><options><option name="required">false</option></options></field>
+            </tempFields>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports fetched from public reference repositories during this build (Service/Assignment/Subflow/Decision-container/EventContainer structure) - see README_IICS_BUILD_NOTES.md for the full caveats and open-items list.
 
-Sequencing note vs. the build guide: step 4.15/step 3 lists "invoke GetEmployeeDetail_Process and SearchPerson_Process" without specifying order. This build calls GetEmployeeDetail_Process first and feeds its EmployeeNumber into SearchPerson_Process, since the sample Dayforce payload shows XRefCode and EmployeeNumber are the same value in practice, and SearchPerson_Process's Ext Id match needs EmployeeNumber - fetching detail first also avoids a wasted CPD search call if the Dayforce detail call itself fails.
+Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in ProcessOneEmployee_Process, not inline here, because IICS's loop-over-a-list mechanism is the runForEach flag on a &lt;subflow&gt; call, not a generic "repeat" step that can wrap an arbitrary multi-step sequence - so the per-employee body had to become its own sub-process to be loopable as a unit.
 
-CPD auth note: no Dayforce-style "Get token" action exists for CPD in cnctr_cpd_get because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). cpd_token below is sourced from a process input parameter (backed by a secure/connection parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to cnctr_cpd_get mirroring the Dayforce pattern and call it here alongside inv-dftoken.</notes>
+CPD auth note: no Dayforce-style "Get token" action exists for CPD in cnctr_cpd_get because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to cnctr_cpd_get mirroring the Dayforce pattern and call it here.
+
+LastRunTimestamp persistence: this process takes it as an input and emits out_CurrentRunTimestamp as an output, but the actual storage (a cache table, a file, a custom parameter) between scheduled runs is not wired up - build guide 4.16 leaves the exact mechanism to be decided.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>
-            <extData>
-               <nvpair name="treatEmptyStringAsNotNull">false</nvpair>
-               <nvpair name="treatEmptyObjectListAsArray">true</nvpair>
-            </extData>
             <flow id="df5ea9605-7f87-4c9c-bdfa-7d93f49d3ba0">
                <start id="k15f60530-72d4-4eb9-983a-b124a497eacf">
-                  <link id="xl01" targetId="inv-getchanged"/>
+                  <link id="xl01" targetId="sf-getchanged"/>
                </start>
-
-               <!-- Step 1 (build guide 4.15): pull the delta list of changed Dayforce employees -->
-               <invokeProcess id="inv-getchanged" process="GetChangedEmployees_Process" title="Get changed employees">
-                  <inputMapping>
-                     <map source="LastRunTimestamp" target="LastRunTimestamp"/>
-                  </inputMapping>
-                  <outputMapping>
-                     <map source="ChangedXRefCodes" target="ChangedXRefCodes"/>
-                     <map source="CurrentRunTimestamp" target="CurrentRunTimestamp"/>
-                  </outputMapping>
-                  <link id="xl02" targetId="inv-dftoken"/>
-               </invokeProcess>
-
-               <!-- One Dayforce token acquired for the whole run and reused per employee, instead of once per employee -->
-               <invoke id="inv-dftoken" connector="cnctr-test-dayforce" action="Get token" title="Get Dayforce token (run-scoped)">
-                  <inputMapping>
-                     <map source="processParameter:DayforceUsername" target="df_username"/>
-                     <map source="processParameter:DayforcePassword" target="df_password"/>
-                  </inputMapping>
-                  <outputMapping>
-                     <map source="access_token" target="access_token"/>
-                  </outputMapping>
-                  <link id="xl03" targetId="loop-employees"/>
-               </invoke>
-
-               <!-- Step 2 (build guide 4.15): loop over each changed employee -->
-               <forEach id="loop-employees" collection="ChangedXRefCodes" item="XRefCode" title="For each changed employee">
-                  <flow id="body-employee">
-                     <start id="body-start">
-                        <link id="bl01" targetId="scope-employee"/>
-                     </start>
-
-                     <!-- Step 6 (build guide 4.15/4.12): wrap the whole per-employee body in a fault handler -->
-                     <scope id="scope-employee" title="Per-employee processing (fault-wrapped, build guide 4.13)">
-                        <flow id="inner-employee">
-                           <start id="inner-start">
-                              <link id="il01" targetId="inv-getdetail"/>
-                           </start>
-
-                           <!-- Step 3 (build guide 4.15): get full employee detail -->
-                           <invokeProcess id="inv-getdetail" process="GetEmployeeDetail_Process" title="Get employee detail">
-                              <inputMapping>
-                                 <map source="XRefCode" target="XRefCode"/>
-                                 <map source="access_token" target="access_token"/>
-                              </inputMapping>
-                              <outputMapping>
-                                 <map source="Employee" target="Employee"/>
-                                 <map source="WorkContracts" target="WorkContracts"/>
-                                 <map source="Contacts" target="Contacts"/>
-                              </outputMapping>
-                              <link id="il02" targetId="inv-search"/>
-                           </invokeProcess>
-
-                           <!-- Step 3 continued: search CPD for an existing match (see sequencing note above) -->
-                           <invokeProcess id="inv-search" process="SearchPerson_Process" title="Search CPD for existing person">
-                              <inputMapping>
-                                 <map source="Employee.EmployeeNumber" target="EmployeeNumber"/>
-                                 <map source="processParameter:CpdToken" target="cpd_token"/>
-                              </inputMapping>
-                              <outputMapping>
-                                 <map source="PersonFound" target="PersonFound"/>
-                                 <map source="personVinciId" target="personVinciId"/>
-                                 <map source="ExistingContractId" target="ExistingContractId"/>
-                                 <map source="ExistingPhones" target="ExistingPhones"/>
-                              </outputMapping>
-                              <link id="il03" targetId="dec-createOrUpdate"/>
-                           </invokeProcess>
-
-                           <!-- Step 4 (build guide 4.7): Decision / router -->
-                           <decision id="dec-createOrUpdate" title="Person found?">
-                              <case condition="PersonFound = true" targetId="inv-update"/>
-                              <case condition="PersonFound = false" targetId="inv-create"/>
-                           </decision>
-
-                           <!-- Scenario 2 (Update path, build guide 4.9) -->
-                           <invokeProcess id="inv-update" process="UpdatePersonAndContract_Process" title="Update person + contract">
-                              <inputMapping>
-                                 <map source="Employee" target="Employee"/>
-                                 <map source="WorkContracts" target="WorkContracts"/>
-                                 <map source="personVinciId" target="personVinciId"/>
-                                 <map source="ExistingContractId" target="ExistingContractId"/>
-                                 <map source="processParameter:CpdToken" target="cpd_token"/>
-                              </inputMapping>
-                              <link id="il04" targetId="dp-resolveActiveIds"/>
-                           </invokeProcess>
-
-                           <!-- Scenario 1 (Create path, build guide 4.8) -->
-                           <invokeProcess id="inv-create" process="CreatePersonAndContract_Process" title="Create person + contract">
-                              <inputMapping>
-                                 <map source="Employee" target="Employee"/>
-                                 <map source="WorkContracts" target="WorkContracts"/>
-                                 <map source="processParameter:CpdToken" target="cpd_token"/>
-                              </inputMapping>
-                              <outputMapping>
-                                 <map source="NewPersonVinciId" target="NewPersonVinciId"/>
-                                 <map source="NewContractId" target="NewContractId"/>
-                              </outputMapping>
-                              <link id="il05" targetId="inv-writeback"/>
-                           </invokeProcess>
-
-                           <!-- Scenario 4 (VINCI ID writeback, Create path only, build guide 4.10) -->
-                           <invokeProcess id="inv-writeback" process="WriteVinciId_Process" title="Write VINCI ID back to Dayforce">
-                              <inputMapping>
-                                 <map source="XRefCode" target="XRefCode"/>
-                                 <map source="NewPersonVinciId" target="NewPersonVinciId"/>
-                                 <map source="access_token" target="access_token"/>
-                              </inputMapping>
-                              <link id="il06" targetId="dp-resolveActiveIds"/>
-                           </invokeProcess>
-
-                           <!-- Both branches converge here before phone reconciliation -->
-                           <dataProcess id="dp-resolveActiveIds" title="Resolve active personVinciId/contractId for this run">
-                              <description>Update path uses the ids returned by SearchPerson_Process; Create path uses the ids returned by CreatePersonAndContract_Process. Only one branch will have populated its variables, so the iif() falls through cleanly.</description>
-                              <expression target="ActivePersonVinciId">iif(PersonFound, personVinciId, NewPersonVinciId)</expression>
-                              <expression target="ActiveContractId">iif(PersonFound, ExistingContractId, NewContractId)</expression>
-                              <link id="il07" targetId="dp-comparePhones"/>
-                           </dataProcess>
-
-                           <!-- Step 5 / Scenario 3 (build guide 4.11): compare phone lists -->
-                           <dataProcess id="dp-comparePhones" title="Compare phone list (Dayforce vs. CPD)">
-                              <description>OPEN ITEM: Contacts.Items field names (ContactType/ContactDetail below) and the Dayforce-contact-type-to-CPD-phoneTypeCode mapping are placeholders - the design doc leaves the phone type code mapping unconfirmed (section 3.2.5), and no sample of the expanded Contacts.Items shape was provided. mapPhoneType/parseDiallingCode/parseNumber represent lookup/parsing logic that still needs to be written once both are confirmed against a live expanded GetEmployeeDetail call. ExistingPhones may also come back empty from SearchPerson_Process today - see that process's notes.</description>
-                              <expression target="DayforcePhones">list:project(Contacts, '{ phoneTypeCode: mapPhoneType(ContactType.XRefCode), diallingCode: parseDiallingCode(ContactDetail), number: parseNumber(ContactDetail) }')</expression>
-                              <expression target="PhonesToAdd">list:where(DayforcePhones, 'not list:exists(ExistingPhones, "phoneTypeCode = " &amp;amp; phoneTypeCode)')</expression>
-                              <expression target="PhonesToUpdate">list:where(DayforcePhones, 'list:exists(ExistingPhones, "phoneTypeCode = " &amp;amp; phoneTypeCode &amp;amp; " and number != " &amp;amp; number)')</expression>
-                              <expression target="PhonesToDelete">list:where(ExistingPhones, 'not list:exists(DayforcePhones, "phoneTypeCode = " &amp;amp; phoneTypeCode)')</expression>
-                              <link id="il08" targetId="loop-phonesToAdd"/>
-                           </dataProcess>
-
-                           <!-- Step 5 continued (build guide 4.12) -->
-                           <forEach id="loop-phonesToAdd" collection="PhonesToAdd" item="Phone" title="For each phone to add">
-                              <flow id="body-phoneadd">
-                                 <start id="pa-start"><link id="pal1" targetId="inv-addphone"/></start>
-                                 <invokeProcess id="inv-addphone" process="AddPhoneNumber_Process" title="Add phone">
-                                    <inputMapping>
-                                       <map source="ActivePersonVinciId" target="personVinciId"/>
-                                       <map source="ActiveContractId" target="contractId"/>
-                                       <map source="Phone.phoneTypeCode" target="phoneTypeCode"/>
-                                       <map source="Phone.diallingCode" target="diallingCode"/>
-                                       <map source="Phone.number" target="number"/>
-                                       <map source="processParameter:CpdToken" target="cpd_token"/>
-                                    </inputMapping>
-                                    <link id="pal2" targetId="pa-end"/>
-                                 </invokeProcess>
-                                 <end id="pa-end"><title>End</title></end>
-                              </flow>
-                              <link id="il09" targetId="loop-phonesToUpdate"/>
-                           </forEach>
-
-                           <forEach id="loop-phonesToUpdate" collection="PhonesToUpdate" item="Phone" title="For each phone to update">
-                              <flow id="body-phoneupdate">
-                                 <start id="pu-start"><link id="pul1" targetId="inv-updatephone"/></start>
-                                 <invokeProcess id="inv-updatephone" process="UpdatePhoneNumber_Process" title="Update phone">
-                                    <inputMapping>
-                                       <map source="ActivePersonVinciId" target="personVinciId"/>
-                                       <map source="ActiveContractId" target="contractId"/>
-                                       <map source="Phone.phoneTypeCode" target="phoneTypeCode"/>
-                                       <map source="Phone.diallingCode" target="diallingCode"/>
-                                       <map source="Phone.number" target="number"/>
-                                       <map source="processParameter:CpdToken" target="cpd_token"/>
-                                    </inputMapping>
-                                    <link id="pul2" targetId="pu-end"/>
-                                 </invokeProcess>
-                                 <end id="pu-end"><title>End</title></end>
-                              </flow>
-                              <link id="il10" targetId="loop-phonesToDelete"/>
-                           </forEach>
-
-                           <forEach id="loop-phonesToDelete" collection="PhonesToDelete" item="Phone" title="For each phone to delete">
-                              <flow id="body-phonedelete">
-                                 <start id="pd-start"><link id="pdl1" targetId="inv-deletephone"/></start>
-                                 <invokeProcess id="inv-deletephone" process="DeletePhoneNumber_Process" title="Delete phone">
-                                    <inputMapping>
-                                       <map source="ActivePersonVinciId" target="personVinciId"/>
-                                       <map source="ActiveContractId" target="contractId"/>
-                                       <map source="Phone.phoneTypeCode" target="phoneTypeCode"/>
-                                       <map source="processParameter:CpdToken" target="cpd_token"/>
-                                    </inputMapping>
-                                    <link id="pdl2" targetId="pd-end"/>
-                                 </invokeProcess>
-                                 <end id="pd-end"><title>End</title></end>
-                              </flow>
-                              <link id="il11" targetId="inner-end"/>
-                           </forEach>
-
-                           <end id="inner-end">
-                              <title>End</title>
-                           </end>
-                        </flow>
-
-                        <!-- Step 6 continued (build guide 4.12-4.13): route any fault raised above to ErrorAlert_Process -->
-                        <faultHandlers>
-                           <catchAll>
-                              <flow id="fault-flow">
-                                 <start id="fault-start">
-                                    <link id="fl01" targetId="inv-erroralert"/>
-                                 </start>
-                                 <invokeProcess id="inv-erroralert" process="ErrorAlert_Process" title="Send error alert">
-                                    <inputMapping>
-                                       <map source="XRefCode" target="XRefCode"/>
-                                       <map source="fault:activityName" target="FailedStepName"/>
-                                       <map source="fault:httpStatus" target="HttpStatus"/>
-                                       <map source="fault:message" target="ErrorMessage"/>
-                                    </inputMapping>
-                                    <link id="fl02" targetId="fault-end"/>
-                                 </invokeProcess>
-                                 <end id="fault-end">
-                                    <title>End</title>
-                                 </end>
-                              </flow>
-                           </catchAll>
-                        </faultHandlers>
-                        <link id="bl02" targetId="body-end"/>
-                     </scope>
-
-                     <end id="body-end">
-                        <title>End</title>
-                     </end>
-                  </flow>
-                  <link id="xl04" targetId="end-l08f9dfc7-24cc-443b-93b1-cfe87135576c"/>
-               </forEach>
-
+               <subflow id="sf-getchanged">
+                  <title>Get changed employees</title>
+                  <subflowGUID>3oBo3euvAbRVfbijBuFPeO</subflowGUID>
+                  <subflowPath>GetChangedEmployees_Process</subflowPath>
+                  <runForEach>false</runForEach>
+                  <input>
+                     <parameter name="in_LastRunTimestamp" source="field" updatable="true">input.in_LastRunTimestamp</parameter>
+                     <parameter name="in_DayforceUsername" source="field" updatable="true">input.in_DayforceUsername</parameter>
+                     <parameter name="in_DayforcePassword" source="field" updatable="true">input.in_DayforcePassword</parameter>
+                  </input>
+                  <outputDef/>
+                  <link id="xl02" targetId="asn-savetimestamp"/>
+               </subflow>
+               <assignment id="asn-savetimestamp">
+                  <title>Persist run timestamp</title>
+                  <operation source="field" to="output.out_CurrentRunTimestamp">output.out_CurrentRunTimestamp</operation>
+                  <link id="xl03" targetId="svc-dftoken"/>
+               </assignment>
+               <service id="svc-dftoken">
+                  <title>Get Dayforce token (run-scoped)</title>
+                  <serviceName>cnctr-test-dayforce:Get token</serviceName>
+                  <serviceGUID>4eE2MYnrQWFgBzm3wuvKQW</serviceGUID>
+                  <serviceInput>
+                     <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
+                     <parameter name="df_password" source="field" updatable="true">input.in_DayforcePassword</parameter>
+                  </serviceInput>
+                  <link id="xl04" targetId="asn-savetoken"/>
+               </service>
+               <assignment id="asn-savetoken">
+                  <title>Save token</title>
+                  <operation source="field" to="temp.tmp_access_token">output.access_token</operation>
+                  <link id="xl05" targetId="sf-processemployees"/>
+               </assignment>
+               <subflow id="sf-processemployees">
+                  <title>Process each changed employee (once per out_ChangedXRefCodes entry)</title>
+                  <subflowGUID>VYIrQ7qaaXeojtBdb9dXHt</subflowGUID>
+                  <subflowPath>ProcessOneEmployee_Process</subflowPath>
+                  <runForEach>true</runForEach>
+                  <input>
+                     <parameter name="in_XRefCode" source="field" updatable="true">output.out_ChangedXRefCodes</parameter>
+                     <parameter name="in_access_token" source="field" updatable="true">temp.tmp_access_token</parameter>
+                     <parameter name="in_cpd_token" source="field" updatable="true">input.in_CpdToken</parameter>
+                  </input>
+                  <outputDef/>
+                  <link id="xl06" targetId="end-l08f9dfc7-24cc-443b-93b1-cfe87135576c"/>
+               </subflow>
                <end id="end-l08f9dfc7-24cc-443b-93b1-cfe87135576c">
                   <title>End</title>
                </end>

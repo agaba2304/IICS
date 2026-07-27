@@ -4,7 +4,7 @@
       <types1:EntryId>xpZXrmJaYOBu7TJpkrH1WV-gt-00000010-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
       <types1:Name>ErrorAlert_Process</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
-      <types1:Description>Build guide 4.13-4.14. Shared fault handler target: notifies on any failed employee run.</types1:Description>
+      <types1:Description>Build guide 4.13-4.14. Shared fault handler target: formats a failure notification for a failed employee run.</types1:Description>
       <types1:AppliesTo/>
       <types1:Tags/>
       <types1:VersionLabel>1.0</types1:VersionLabel>
@@ -22,39 +22,60 @@
                   displayName="ErrorAlert_Process"
                   name="ErrorAlert_Process"
                   overrideAPIName="false">
-            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd">
-               <parameter name="XRefCode" direction="in" type="string" description="Employee identifier the failure occurred for, empty if the failure happened before an employee was resolved (e.g. GetChangedEmployees itself)"/>
-               <parameter name="FailedStepName" direction="in" type="string" description="Name of the sub-process/step that raised the fault"/>
-               <parameter name="HttpStatus" direction="in" type="string" description="HTTP status code from the failing call, if available"/>
-               <parameter name="ErrorMessage" direction="in" type="string" description="Fault message / response body"/>
-            </parameterSet>
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Build guide 4.13/4.14: receives structured fault details from the Orchestrator's fault handler scope and sends a notification. Recipient list and per-record vs. digest format are still open per the design doc and must be confirmed with the client (build guide 4.14).</description>
+            <description>Build guide 4.13/4.14: receives structured fault details from ProcessOneEmployee_Process's fault handler and formats a notification. NOT WIRED TO AN EMAIL CONNECTOR YET - see notes.</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
-            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 - see README_IICS_BUILD_NOTES.md for schema caveats. The "notify" step below is written as a generic Email Notification action per build guide 4.14 ("Add an Email Notification step, or use IICS's native notification connector") - swap in whichever the client confirms. OPEN ITEM: recipient list and per-record vs. digest format need client sign-off before production use; per-record (one email per failed employee) is used here as the safer default until a digest is explicitly requested, since a digest risks batching failures and delaying awareness.</notes>
+            <input>
+               <parameter description="Employee identifier the failure occurred for, empty if the failure happened before an employee was resolved" name="in_XRefCode" required="false" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="Name of the sub-process/step that raised the fault" name="in_FailedStepName" required="false" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="Fault code/message from the failing call" name="in_ErrorMessage" required="false" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+            </input>
+            <output>
+               <field description="Formatted alert subject line" name="out_Subject" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+               <field description="Formatted alert body" name="out_Body" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+            </output>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md.
+OPEN ITEM: this process only formats the alert (Assignment step below) - it does not yet call an Email/notification connector, because no such connector currently exists in this project's scope to reference by a real serviceGUID (inventing one would fail import, per the lesson learned building the rest of this package). Once the client confirms recipients and format (build guide 4.14) and an Email connection/connector is created in this IICS org, add a &lt;service&gt; step here calling it (mirroring the cnctr-test-dayforce/cnctr_cpd_get &lt;service&gt; pattern used throughout this package), mapping out_Subject/out_Body into its input fields.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>
-            <extData>
-               <nvpair name="treatEmptyStringAsNotNull">false</nvpair>
-               <nvpair name="treatEmptyObjectListAsArray">true</nvpair>
-            </extData>
-            <flow id="f10-erroralert">
-               <start id="start-erroralert">
-                  <link id="l1" targetId="notify-error"/>
+            <flow id="a">
+               <start id="b">
+                  <link id="l1" targetId="asn-format"/>
                </start>
-               <notify id="notify-error" channel="email" title="Send error notification">
-                  <description>OPEN ITEM: recipient list TBD (build guide 4.14). Subject/body below use the fault fields captured by the Orchestrator's fault handler.</description>
-                  <recipients>TBD_ERROR_ALERT_RECIPIENTS</recipients>
-                  <subject>Dayforce-CPD integration failure: XRefCode {XRefCode} at {FailedStepName}</subject>
-                  <body>Employee XRefCode: {XRefCode}
-Failed step: {FailedStepName}
-HTTP status: {HttpStatus}
-Error message: {ErrorMessage}</body>
-                  <link id="l2" targetId="end-erroralert"/>
-               </notify>
-               <end id="end-erroralert">
+               <assignment id="asn-format">
+                  <title>Format alert</title>
+                  <operation source="formula" to="output.out_Subject">
+                     <expression language="XQuery">'Dayforce-CPD integration failure: XRefCode ' || $input.in_XRefCode || ' at ' || $input.in_FailedStepName</expression>
+                  </operation>
+                  <operation source="formula" to="output.out_Body">
+                     <expression language="XQuery">'Employee XRefCode: ' || $input.in_XRefCode || '&#10;Failed step: ' || $input.in_FailedStepName || '&#10;Error message: ' || $input.in_ErrorMessage</expression>
+                  </operation>
+                  <link id="l2" targetId="c"/>
+               </assignment>
+               <end id="c">
                   <title>End</title>
                </end>
             </flow>

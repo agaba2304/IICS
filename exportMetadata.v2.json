@@ -322,6 +322,29 @@
           "documentState": "VALID"
         }
       }
+    },
+    {
+      "objectGuid": "VYIrQ7qaaXeojtBdb9dXHt",
+      "objectName": "ProcessOneEmployee_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "VYIrQ7qaaXeojtBdb9dXHt-gt-00000011-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
     }
   ]
 }
