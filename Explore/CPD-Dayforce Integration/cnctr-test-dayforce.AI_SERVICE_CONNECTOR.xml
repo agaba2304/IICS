@@ -103,7 +103,9 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Whole response body as untyped XML for downstream XQuery navigation (e.g. to pull XRefCode per changed employee)" entireResponse="true" name="RawResponse" type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -132,7 +134,9 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Whole response body as untyped XML for downstream XQuery navigation" entireResponse="true" name="RawResponse" type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -162,7 +166,9 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Whole employee-detail response body as untyped XML (Employee fields, WorkContracts.Items, Contacts.Items) for downstream XQuery navigation" entireResponse="true" name="RawResponse" type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -201,7 +207,9 @@
 }</body>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
             </actions>

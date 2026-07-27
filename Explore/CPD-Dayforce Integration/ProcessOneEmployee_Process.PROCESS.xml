@@ -1,0 +1,322 @@
+<aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
+                   xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
+   <types1:Item>
+      <types1:EntryId>VYIrQ7qaaXeojtBdb9dXHt-gt-00000011-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
+      <types1:Name>ProcessOneEmployee_Process</types1:Name>
+      <types1:MimeType>application/xml+process</types1:MimeType>
+      <types1:Description>Per-employee body: detail + search + create-or-update + phone reconciliation, fault-wrapped. Invoked once per changed XRefCode by the Orchestrator via a runForEach subflow call.</types1:Description>
+      <types1:AppliesTo/>
+      <types1:Tags/>
+      <types1:VersionLabel>1.0</types1:VersionLabel>
+      <types1:State>CURRENT</types1:State>
+      <types1:ProcessGroup/>
+      <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
+      <types1:CreationDate>2026-07-27T17:44:00Z</types1:CreationDate>
+      <types1:ModifiedBy/>
+      <types1:PublicationStatus>unpublished</types1:PublicationStatus>
+      <types1:Entry>
+         <process xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2010/10/avosScreenflow.xsd"
+                  xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
+                  xmlns:list="urn:activevos:spi:list:functions"
+                  GUID="VYIrQ7qaaXeojtBdb9dXHt"
+                  displayName="ProcessOneEmployee_Process"
+                  name="ProcessOneEmployee_Process"
+                  overrideAPIName="false">
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
+            <appliesTo/>
+            <description>Everything the design's functional scenarios 1-4 require for a single Dayforce employee: GetEmployeeDetail_Process, SearchPerson_Process, the Create/Update Decision (build guide 4.7), the matching Create or Update+Writeback path, and phone reconciliation (build guide 4.11-4.12) - all wrapped in a fault handler (build guide 4.13) that reports to ErrorAlert_Process on any failure. This process itself is called once per changed XRefCode by the Orchestrator using a runForEach subflow call (build guide 4.15).</description>
+            <tags/>
+            <generator>Informatica Process Designer 11</generator>
+            <input>
+               <parameter description="Dayforce employee XRefCode being processed this iteration" name="in_XRefCode" required="true" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+               <parameter description="Dayforce bearer token (run-scoped, from the Orchestrator)" name="in_access_token" required="true" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+               <parameter description="CPD bearer token (run-scoped, from the Orchestrator)" name="in_cpd_token" required="true" type="string">
+                  <options><option name="required">false</option></options>
+               </parameter>
+            </input>
+            <tempFields>
+               <field description="" name="tmp_Employee" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_ActiveWorkContract" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_Contacts" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_PersonFound" type="boolean"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_personVinciId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_ExistingContractId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_ExistingPhones" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_NewPersonVinciId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_NewContractId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_ActivePersonVinciId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_ActiveContractId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_DayforcePhones" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
+               <field description="" name="tmp_PhonesToAdd" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
+               <field description="" name="tmp_PhonesToUpdate" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
+               <field description="" name="tmp_PhonesToDelete" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
+               <field description="" name="tmp_FailedStepName" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_ErrorMessage" type="string"><options><option name="required">false</option></options></field>
+            </tempFields>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md for the full open-items list and schema caveats.
+
+LOWEST-CONFIDENCE PART OF THIS FILE: the three phone reconciliation steps (svc-addphones/svc-updatephones/svc-deletephones) use &lt;subflow runForEach="true"&gt; to call AddPhoneNumber_Process/UpdatePhoneNumber_Process/DeletePhoneNumber_Process once per entry in tmp_PhonesToAdd/Update/Delete. Every real IICS export found while researching this schema had runForEach=false; no populated runForEach=true example was available to confirm exactly how per-item field binding works when it's true. Re-check this in Process Designer's own "Repeat"/loop configuration UI after import and correct the binding if needed - the intent (call the phone sub-process once per list entry) is documented here even if the exact XML wiring needs adjustment.
+
+Phone comparison (dp-comparePhones): tmp_Contacts field names (ContactType/ContactDetail) and the Dayforce-contact-type-to-CPD-phoneTypeCode mapping are placeholders - no sample of the expanded Contacts.Items shape was available (see design doc Open Item on phone type code mapping, section 3.2.5).</notes>
+            <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
+               <rest/>
+            </deployment>
+            <flow id="a">
+               <start id="b">
+                  <link id="l1" targetId="ec-main"/>
+               </start>
+               <eventContainer id="ec-main">
+                  <flow id="normalFlow">
+                     <subflow id="sf-getdetail">
+                        <title>Get employee detail</title>
+                        <subflowGUID>KPffEx7EOwfjp7pn7kzZ2M</subflowGUID>
+                        <subflowPath>GetEmployeeDetail_Process</subflowPath>
+                        <runForEach>false</runForEach>
+                        <input>
+                           <parameter name="in_XRefCode" source="field" updatable="true">input.in_XRefCode</parameter>
+                           <parameter name="in_access_token" source="field" updatable="true">input.in_access_token</parameter>
+                        </input>
+                        <outputDef/>
+                        <link id="l2" targetId="asn-savedetail"/>
+                     </subflow>
+                     <assignment id="asn-savedetail">
+                        <title>Save employee detail</title>
+                        <operation source="field" to="temp.tmp_Employee">output.out_Employee</operation>
+                        <operation source="formula" to="temp.tmp_ActiveWorkContract">
+                           <expression language="XQuery">($output.out_WorkContracts/*[isActive/text() = 'true'])[1]</expression>
+                        </operation>
+                        <operation source="field" to="temp.tmp_Contacts">output.out_Contacts</operation>
+                        <link id="l3" targetId="sf-search"/>
+                     </assignment>
+                     <subflow id="sf-search">
+                        <title>Search CPD for existing person</title>
+                        <subflowGUID>DB1JRZkPV3HvqKV1vfjqgb</subflowGUID>
+                        <subflowPath>SearchPerson_Process</subflowPath>
+                        <runForEach>false</runForEach>
+                        <input>
+                           <parameter name="in_EmployeeNumber" source="field" updatable="true">output.out_EmployeeNumber</parameter>
+                           <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                        </input>
+                        <outputDef/>
+                        <link id="l4" targetId="asn-savesearch"/>
+                     </subflow>
+                     <assignment id="asn-savesearch">
+                        <title>Save search result</title>
+                        <operation source="field" to="temp.tmp_PersonFound">output.out_PersonFound</operation>
+                        <operation source="field" to="temp.tmp_personVinciId">output.out_personVinciId</operation>
+                        <operation source="field" to="temp.tmp_ExistingContractId">output.out_ExistingContractId</operation>
+                        <operation source="field" to="temp.tmp_ExistingPhones">output.out_ExistingPhones</operation>
+                        <link id="l5" targetId="dec-createOrUpdate"/>
+                     </assignment>
+                     <container id="dec-createOrUpdate" type="exclusive">
+                        <title>Person found?</title>
+                        <flow id="branch-update">
+                           <subflow id="sf-update">
+                              <title>Update person + contract</title>
+                              <subflowGUID>TUaU8PTn1SEcDVyUTRKb6U</subflowGUID>
+                              <subflowPath>UpdatePersonAndContract_Process</subflowPath>
+                              <runForEach>false</runForEach>
+                              <input>
+                                 <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_personVinciId</parameter>
+                                 <parameter name="in_ExistingContractId" source="field" updatable="true">temp.tmp_ExistingContractId</parameter>
+                                 <parameter name="in_FirstName" source="field" updatable="true">temp.tmp_Employee/FirstName</parameter>
+                                 <parameter name="in_LastName" source="field" updatable="true">temp.tmp_Employee/LastName</parameter>
+                                 <parameter name="in_PreferredFirstName" source="field" updatable="true">temp.tmp_Employee/PreferredFirstName</parameter>
+                                 <parameter name="in_PreferredLastName" source="field" updatable="true">temp.tmp_Employee/PreferredLastName</parameter>
+                                 <parameter name="in_BirthDate" source="field" updatable="true">temp.tmp_Employee/BirthDate</parameter>
+                                 <parameter name="in_CultureCode" source="field" updatable="true">temp.tmp_Employee/Culture/XRefCode</parameter>
+                                 <parameter name="in_HomeOrgLedgerCode" source="field" updatable="true">temp.tmp_Employee/HomeOrganization/LedgerCode</parameter>
+                                 <parameter name="in_ActiveWorkContract" source="field" updatable="true">temp.tmp_ActiveWorkContract</parameter>
+                                 <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                              </input>
+                              <outputDef/>
+                              <link id="l6" targetId="asn-resolveupdate"/>
+                           </subflow>
+                           <assignment id="asn-resolveupdate">
+                              <title>Resolve active ids (Update path)</title>
+                              <operation source="field" to="temp.tmp_ActivePersonVinciId">temp.tmp_personVinciId</operation>
+                              <operation source="field" to="temp.tmp_ActiveContractId">temp.tmp_ExistingContractId</operation>
+                              <link id="l7" targetId="dec-createOrUpdate" type="containerLink"/>
+                           </assignment>
+                        </flow>
+                        <flow id="branch-create">
+                           <subflow id="sf-create">
+                              <title>Create person + contract</title>
+                              <subflowGUID>ugYTHbESlUs3xY4PcfoFaW</subflowGUID>
+                              <subflowPath>CreatePersonAndContract_Process</subflowPath>
+                              <runForEach>false</runForEach>
+                              <input>
+                                 <parameter name="in_EmployeeNumber" source="field" updatable="true">temp.tmp_Employee/EmployeeNumber</parameter>
+                                 <parameter name="in_FirstName" source="field" updatable="true">temp.tmp_Employee/FirstName</parameter>
+                                 <parameter name="in_LastName" source="field" updatable="true">temp.tmp_Employee/LastName</parameter>
+                                 <parameter name="in_PreferredFirstName" source="field" updatable="true">temp.tmp_Employee/PreferredFirstName</parameter>
+                                 <parameter name="in_PreferredLastName" source="field" updatable="true">temp.tmp_Employee/PreferredLastName</parameter>
+                                 <parameter name="in_BirthDate" source="field" updatable="true">temp.tmp_Employee/BirthDate</parameter>
+                                 <parameter name="in_SeniorityDate" source="field" updatable="true">temp.tmp_Employee/SeniorityDate</parameter>
+                                 <parameter name="in_CultureCode" source="field" updatable="true">temp.tmp_Employee/Culture/XRefCode</parameter>
+                                 <parameter name="in_HomeOrgLedgerCode" source="field" updatable="true">temp.tmp_Employee/HomeOrganization/LedgerCode</parameter>
+                                 <parameter name="in_ActiveWorkContract" source="field" updatable="true">temp.tmp_ActiveWorkContract</parameter>
+                                 <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                              </input>
+                              <outputDef/>
+                              <link id="l8" targetId="asn-savecreate"/>
+                           </subflow>
+                           <assignment id="asn-savecreate">
+                              <title>Save new ids</title>
+                              <operation source="field" to="temp.tmp_NewPersonVinciId">output.out_NewPersonVinciId</operation>
+                              <operation source="field" to="temp.tmp_NewContractId">output.out_NewContractId</operation>
+                              <operation source="field" to="temp.tmp_ActivePersonVinciId">output.out_NewPersonVinciId</operation>
+                              <operation source="field" to="temp.tmp_ActiveContractId">output.out_NewContractId</operation>
+                              <link id="l9" targetId="sf-writeback"/>
+                           </assignment>
+                           <subflow id="sf-writeback">
+                              <title>Write VINCI ID back to Dayforce</title>
+                              <subflowGUID>zBI0ZwpxPB1sKMv6wHgpd1</subflowGUID>
+                              <subflowPath>WriteVinciId_Process</subflowPath>
+                              <runForEach>false</runForEach>
+                              <input>
+                                 <parameter name="in_XRefCode" source="field" updatable="true">input.in_XRefCode</parameter>
+                                 <parameter name="in_NewPersonVinciId" source="field" updatable="true">temp.tmp_NewPersonVinciId</parameter>
+                                 <parameter name="in_access_token" source="field" updatable="true">input.in_access_token</parameter>
+                              </input>
+                              <outputDef/>
+                              <link id="l10" targetId="dec-createOrUpdate" type="containerLink"/>
+                           </subflow>
+                        </flow>
+                        <link id="l11" targetId="branch-update" type="containerLink">
+                           <condition source="formula">
+                              <function name="true">
+                                 <arg name="field">{$temp.tmp_PersonFound}</arg>
+                              </function>
+                           </condition>
+                        </link>
+                        <link id="l12" targetId="branch-create" type="containerLink">
+                           <condition source="formula">
+                              <function name="false">
+                                 <arg name="field">{$temp.tmp_PersonFound}</arg>
+                              </function>
+                           </condition>
+                        </link>
+                        <link id="l13" targetId="dp-comparephones"/>
+                     </container>
+                     <assignment id="dp-comparephones">
+                        <title>Compare phone list (Dayforce vs. CPD)</title>
+                        <operation source="formula" to="temp.tmp_DayforcePhones">
+                           <expression language="XQuery">for $c in $temp.tmp_Contacts/* return
+&lt;phone&gt;
+   &lt;phoneTypeCode&gt;{$c/ContactType/XRefCode/text()}&lt;/phoneTypeCode&gt;
+   &lt;diallingCode&gt;{$c/DiallingCode/text()}&lt;/diallingCode&gt;
+   &lt;number&gt;{$c/ContactDetail/text()}&lt;/number&gt;
+&lt;/phone&gt;</expression>
+                        </operation>
+                        <operation source="formula" to="temp.tmp_PhonesToAdd">
+                           <expression language="XQuery">for $p in $temp.tmp_DayforcePhones
+where empty($temp.tmp_ExistingPhones/*[phoneTypeCode/text() = $p/phoneTypeCode/text()])
+return $p</expression>
+                        </operation>
+                        <operation source="formula" to="temp.tmp_PhonesToUpdate">
+                           <expression language="XQuery">for $p in $temp.tmp_DayforcePhones
+where exists($temp.tmp_ExistingPhones/*[phoneTypeCode/text() = $p/phoneTypeCode/text() and number/text() != $p/number/text()])
+return $p</expression>
+                        </operation>
+                        <operation source="formula" to="temp.tmp_PhonesToDelete">
+                           <expression language="XQuery">for $e in $temp.tmp_ExistingPhones/*
+where empty($temp.tmp_DayforcePhones/*[phoneTypeCode/text() = $e/phoneTypeCode/text()])
+return $e</expression>
+                        </operation>
+                        <link id="l14" targetId="sf-addphones"/>
+                     </assignment>
+                     <subflow id="sf-addphones">
+                        <title>Add phones (once per PhonesToAdd entry)</title>
+                        <subflowGUID>AwxVtpAsbduNEHRbWUeFYb</subflowGUID>
+                        <subflowPath>AddPhoneNumber_Process</subflowPath>
+                        <runForEach>true</runForEach>
+                        <input>
+                           <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
+                           <parameter name="in_contractId" source="field" updatable="true">temp.tmp_ActiveContractId</parameter>
+                           <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_PhonesToAdd/phoneTypeCode</parameter>
+                           <parameter name="in_diallingCode" source="field" updatable="true">temp.tmp_PhonesToAdd/diallingCode</parameter>
+                           <parameter name="in_number" source="field" updatable="true">temp.tmp_PhonesToAdd/number</parameter>
+                           <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                        </input>
+                        <outputDef/>
+                        <link id="l15" targetId="sf-updatephones"/>
+                     </subflow>
+                     <subflow id="sf-updatephones">
+                        <title>Update phones (once per PhonesToUpdate entry)</title>
+                        <subflowGUID>2MQBdKskt65bUvaVMnxm9g</subflowGUID>
+                        <subflowPath>UpdatePhoneNumber_Process</subflowPath>
+                        <runForEach>true</runForEach>
+                        <input>
+                           <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
+                           <parameter name="in_contractId" source="field" updatable="true">temp.tmp_ActiveContractId</parameter>
+                           <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_PhonesToUpdate/phoneTypeCode</parameter>
+                           <parameter name="in_diallingCode" source="field" updatable="true">temp.tmp_PhonesToUpdate/diallingCode</parameter>
+                           <parameter name="in_number" source="field" updatable="true">temp.tmp_PhonesToUpdate/number</parameter>
+                           <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                        </input>
+                        <outputDef/>
+                        <link id="l16" targetId="sf-deletephones"/>
+                     </subflow>
+                     <subflow id="sf-deletephones">
+                        <title>Delete phones (once per PhonesToDelete entry)</title>
+                        <subflowGUID>MrEEevrr6RSALfwqq4ZHmt</subflowGUID>
+                        <subflowPath>DeletePhoneNumber_Process</subflowPath>
+                        <runForEach>true</runForEach>
+                        <input>
+                           <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
+                           <parameter name="in_contractId" source="field" updatable="true">temp.tmp_ActiveContractId</parameter>
+                           <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_PhonesToDelete/phoneTypeCode</parameter>
+                           <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                        </input>
+                        <outputDef/>
+                     </subflow>
+                     <link id="l17" targetId="ec-main" type="containerLink"/>
+                  </flow>
+                  <flow id="faultFlow">
+                     <assignment id="asn-faultmap">
+                        <title>Map fault details</title>
+                        <operation source="formula" to="temp.tmp_FailedStepName">
+                           <expression language="XQuery">string($output.faultInfo[1]/code)</expression>
+                        </operation>
+                        <operation source="formula" to="temp.tmp_ErrorMessage">
+                           <expression language="XQuery">string($output.faultInfo[1]/reason) || ' ' || string($output.faultInfo[1]/detail)</expression>
+                        </operation>
+                        <link id="l18" targetId="sf-erroralert"/>
+                     </assignment>
+                     <subflow id="sf-erroralert">
+                        <title>Send error alert</title>
+                        <subflowGUID>xpZXrmJaYOBu7TJpkrH1WV</subflowGUID>
+                        <subflowPath>ErrorAlert_Process</subflowPath>
+                        <runForEach>false</runForEach>
+                        <input>
+                           <parameter name="in_XRefCode" source="field" updatable="true">input.in_XRefCode</parameter>
+                           <parameter name="in_FailedStepName" source="field" updatable="true">temp.tmp_FailedStepName</parameter>
+                           <parameter name="in_ErrorMessage" source="field" updatable="true">temp.tmp_ErrorMessage</parameter>
+                        </input>
+                        <outputDef/>
+                     </subflow>
+                     <link id="l19" targetId="ec-main" type="containerLink"/>
+                  </flow>
+                  <link id="l20" targetId="c"/>
+                  <events>
+                     <catch faultField="faultInfo" id="catch-main" interrupting="true">
+                        <link id="l21" targetId="faultFlow" type="containerLink"/>
+                     </catch>
+                  </events>
+               </eventContainer>
+               <end id="c">
+                  <title>End</title>
+               </end>
+            </flow>
+         </process>
+      </types1:Entry>
+      <types1:GUID>VYIrQ7qaaXeojtBdb9dXHt</types1:GUID>
+      <types1:DisplayName>ProcessOneEmployee_Process</types1:DisplayName>
+   </types1:Item>
+   <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
+</aetgt:getResponse>

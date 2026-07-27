@@ -22,61 +22,114 @@
                   displayName="GetChangedEmployees_Process"
                   name="GetChangedEmployees_Process"
                   overrideAPIName="false">
-            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd">
-               <parameter name="LastRunTimestamp" direction="in" type="string" description="Orchestrator's last successful run timestamp; empty on first run"/>
-               <parameter name="ChangedXRefCodes" direction="out" type="string" isList="true" description="Dayforce XRefCodes changed in the window"/>
-               <parameter name="CurrentRunTimestamp" direction="out" type="string" description="Timestamp to persist as next run's LastRunTimestamp"/>
-            </parameterSet>
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
             <description>Wraps Dayforce APIs 3.1.1 (Get token) and 3.1.2 (Get Changed Employees / delta) behind a single callable sub-process for the Orchestrator (build guide step 4.15, step 1).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
-            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0. Node types (invoke/dataProcess) follow this repo's documented convention (see README_IICS_BUILD_NOTES.md) - re-verify against your IICS tenant's Process Designer palette before deploying. filterUpdatedStartDate/EndDate window: uses LastRunTimestamp when provided, otherwise defaults to "now minus schedule interval" per build guide 4.4 and 4.16 (widen the window slightly vs. the schedule interval to cover clock drift).</notes>
+            <input>
+               <parameter description="Orchestrator's last successful run timestamp; empty on first run" name="in_LastRunTimestamp" required="false" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="Dayforce API username (secure parameter, never hardcoded)" name="in_DayforceUsername" required="true" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="Dayforce API password (secure parameter, never hardcoded)" name="in_DayforcePassword" required="true" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+            </input>
+            <output>
+               <field description="Dayforce XRefCodes changed in the window" name="out_ChangedXRefCodes" type="string">
+                  <options>
+                     <option name="multiSelect">true</option>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+               <field description="Timestamp to persist as next run's LastRunTimestamp" name="out_CurrentRunTimestamp" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+            </output>
+            <tempFields>
+               <field description="" name="tmp_filterUpdatedStartDate" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+               <field description="" name="tmp_filterUpdatedEndDate" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+               <field description="" name="tmp_access_token" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </field>
+            </tempFields>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports (Service/Assignment/subflow/container structure) - see README_IICS_BUILD_NOTES.md. filterUpdatedStartDate/EndDate window: uses in_LastRunTimestamp when provided, otherwise defaults to now minus 20 minutes per build guide 4.4/4.16 (widen slightly vs. the schedule interval to cover clock drift). The exact JSON/XML shape of the delta list response (tmp response Data entries) was not in the sample payloads provided and should be confirmed against a live delta call - the XQuery below assumes the same Data-repeated shape as the single-employee sample (Dayforce_GetEmployees.xml).</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>
-            <extData>
-               <nvpair name="treatEmptyStringAsNotNull">false</nvpair>
-               <nvpair name="treatEmptyObjectListAsArray">true</nvpair>
-            </extData>
-            <flow id="f1-getchanged">
-               <start id="start-getchanged">
-                  <link id="l1" targetId="dp-computeWindow"/>
+            <flow id="a">
+               <start id="b">
+                  <link id="l1" targetId="asn-window"/>
                </start>
-               <dataProcess id="dp-computeWindow" title="Compute delta window">
-                  <description>filterUpdatedStartDate = LastRunTimestamp if set, else now() minus schedule interval; filterUpdatedEndDate = now(). CurrentRunTimestamp = filterUpdatedEndDate.</description>
-                  <expression target="filterUpdatedStartDate">iif(isNull(LastRunTimestamp) or LastRunTimestamp = '', addMinutes(currentTimestamp(), -20), LastRunTimestamp)</expression>
-                  <expression target="filterUpdatedEndDate">currentTimestamp()</expression>
-                  <expression target="CurrentRunTimestamp">filterUpdatedEndDate</expression>
-                  <link id="l2" targetId="inv-token"/>
-               </dataProcess>
-               <invoke id="inv-token" connector="cnctr-test-dayforce" action="Get token" title="Get Dayforce token">
-                  <inputMapping>
-                     <map source="processParameter:DayforceUsername" target="df_username"/>
-                     <map source="processParameter:DayforcePassword" target="df_password"/>
-                  </inputMapping>
-                  <outputMapping>
-                     <map source="access_token" target="access_token"/>
-                  </outputMapping>
-                  <link id="l3" targetId="inv-changed"/>
-               </invoke>
-               <invoke id="inv-changed" connector="cnctr-test-dayforce" action="GetChangedEmployees" title="Get changed employees">
-                  <inputMapping>
-                     <map source="filterUpdatedStartDate" target="filterUpdatedStartDate"/>
-                     <map source="filterUpdatedEndDate" target="filterUpdatedEndDate"/>
-                     <map source="access_token" target="access_token"/>
-                  </inputMapping>
-                  <outputMapping>
-                     <map source="response" target="rawChangedEmployeesResponse"/>
-                  </outputMapping>
-                  <link id="l4" targetId="dp-mapOutput"/>
-               </invoke>
-               <dataProcess id="dp-mapOutput" title="Extract XRefCode list">
-                  <description>Projects rawChangedEmployeesResponse.Data[].XRefCode into ChangedXRefCodes. Exact JSON path depends on the confirmed response shape for the bulk/delta endpoint - validate against a live delta call before use.</description>
-                  <expression target="ChangedXRefCodes">list:project(rawChangedEmployeesResponse, 'Data[*].XRefCode')</expression>
-                  <link id="l5" targetId="end-getchanged"/>
-               </dataProcess>
-               <end id="end-getchanged">
+               <assignment id="asn-window">
+                  <title>Compute delta window</title>
+                  <operation source="formula" to="temp.tmp_filterUpdatedStartDate">
+                     <expression language="XQuery">if (empty($input.in_LastRunTimestamp) or $input.in_LastRunTimestamp = '') then
+  fn:format-dateTime(fn:adjust-dateTime-to-timezone(fn:current-dateTime() - xs:dayTimeDuration('PT20M')), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]Z')
+else
+  $input.in_LastRunTimestamp</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_filterUpdatedEndDate">
+                     <expression language="XQuery">fn:format-dateTime(fn:adjust-dateTime-to-timezone(fn:current-dateTime()), '[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01]Z')</expression>
+                  </operation>
+                  <operation source="field" to="output.out_CurrentRunTimestamp">temp.tmp_filterUpdatedEndDate</operation>
+                  <link id="l2" targetId="svc-token"/>
+               </assignment>
+               <service id="svc-token">
+                  <title>Get Dayforce token</title>
+                  <serviceName>cnctr-test-dayforce:Get token</serviceName>
+                  <serviceGUID>4eE2MYnrQWFgBzm3wuvKQW</serviceGUID>
+                  <serviceInput>
+                     <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
+                     <parameter name="df_password" source="field" updatable="true">input.in_DayforcePassword</parameter>
+                  </serviceInput>
+                  <link id="l3" targetId="asn-savetoken"/>
+               </service>
+               <assignment id="asn-savetoken">
+                  <title>Save token</title>
+                  <operation source="field" to="temp.tmp_access_token">output.access_token</operation>
+                  <link id="l4" targetId="svc-changed"/>
+               </assignment>
+               <service id="svc-changed">
+                  <title>Get changed employees</title>
+                  <serviceName>cnctr-test-dayforce:GetChangedEmployees</serviceName>
+                  <serviceGUID>4eE2MYnrQWFgBzm3wuvKQW</serviceGUID>
+                  <serviceInput>
+                     <parameter name="filterUpdatedStartDate" source="field" updatable="true">temp.tmp_filterUpdatedStartDate</parameter>
+                     <parameter name="filterUpdatedEndDate" source="field" updatable="true">temp.tmp_filterUpdatedEndDate</parameter>
+                     <parameter name="access_token" source="field" updatable="true">temp.tmp_access_token</parameter>
+                  </serviceInput>
+                  <link id="l5" targetId="asn-extract"/>
+               </service>
+               <assignment id="asn-extract">
+                  <title>Extract XRefCode list</title>
+                  <operation source="formula" to="output.out_ChangedXRefCodes">
+                     <expression language="XQuery">for $emp in $output.RawResponse//Data return $emp/XRefCode/text()</expression>
+                  </operation>
+                  <link id="l6" targetId="c"/>
+               </assignment>
+               <end id="c">
                   <title>End</title>
                </end>
             </flow>

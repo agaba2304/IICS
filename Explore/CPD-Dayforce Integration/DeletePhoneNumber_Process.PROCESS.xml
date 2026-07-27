@@ -22,38 +22,54 @@
                   displayName="DeletePhoneNumber_Process"
                   name="DeletePhoneNumber_Process"
                   overrideAPIName="false">
-            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd">
-               <parameter name="personVinciId" direction="in" type="string"/>
-               <parameter name="contractId" direction="in" type="string"/>
-               <parameter name="phoneTypeCode" direction="in" type="string"/>
-               <parameter name="cpd_token" direction="in" type="string"/>
-            </parameterSet>
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Scenario 3 (Phone Number Changes) per the functional design. Wraps CPD API 3.2.7 (Delete Phone Number). Invoked by the Orchestrator once per entry in PhonesToDelete (build guide 4.11-4.12, 4.15 step 5).</description>
+            <description>Scenario 3 (Phone Number Changes). Wraps CPD API 3.2.7 (Delete Phone Number). Invoked by ProcessOneEmployee_Process once per entry in PhonesToDelete, via a runForEach subflow call (build guide 4.11-4.12).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
-            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 - see README_IICS_BUILD_NOTES.md for schema caveats.</notes>
+            <input>
+               <parameter description="CPD VINCI ID for this person" name="in_personVinciId" required="true" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="CPD contract id" name="in_contractId" required="true" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="CPD phone type code identifying which phone entry to delete" name="in_phoneTypeCode" required="true" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+               <parameter description="CPD bearer token" name="in_cpd_token" required="true" type="string">
+                  <options>
+                     <option name="required">false</option>
+                  </options>
+               </parameter>
+            </input>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>
-            <extData>
-               <nvpair name="treatEmptyStringAsNotNull">false</nvpair>
-               <nvpair name="treatEmptyObjectListAsArray">true</nvpair>
-            </extData>
-            <flow id="f9-deletephone">
-               <start id="start-deletephone">
-                  <link id="l1" targetId="inv-deletephone"/>
+            <flow id="a">
+               <start id="b">
+                  <link id="l1" targetId="svc-deletephone"/>
                </start>
-               <invoke id="inv-deletephone" connector="cnctr_cpd_get" action="DeletePhoneNumber" title="Delete CPD phone number">
-                  <inputMapping>
-                     <map source="personVinciId" target="personVinciId"/>
-                     <map source="contractId" target="contractId"/>
-                     <map source="phoneTypeCode" target="phoneTypeCode"/>
-                     <map source="cpd_token" target="cpd_token"/>
-                  </inputMapping>
-                  <link id="l2" targetId="end-deletephone"/>
-               </invoke>
-               <end id="end-deletephone">
+               <service id="svc-deletephone">
+                  <title>Delete CPD phone number</title>
+                  <serviceName>cnctr_cpd_get:DeletePhoneNumber</serviceName>
+                  <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
+                  <serviceInput>
+                     <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
+                     <parameter name="contractId" source="field" updatable="true">input.in_contractId</parameter>
+                     <parameter name="phoneTypeCode" source="field" updatable="true">input.in_phoneTypeCode</parameter>
+                     <parameter name="cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
+                  </serviceInput>
+                  <link id="l2" targetId="c"/>
+               </service>
+               <end id="c">
                   <title>End</title>
                </end>
             </flow>
