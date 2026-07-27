@@ -1,0 +1,70 @@
+<aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
+                   xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
+   <types1:Item>
+      <types1:EntryId>AwxVtpAsbduNEHRbWUeFYb-gt-00000007-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
+      <types1:Name>AddPhoneNumber_Process</types1:Name>
+      <types1:MimeType>application/xml+process</types1:MimeType>
+      <types1:Description>Build guide 4.12. Adds one phone number to a CPD contract.</types1:Description>
+      <types1:AppliesTo/>
+      <types1:Tags/>
+      <types1:VersionLabel>1.0</types1:VersionLabel>
+      <types1:State>CURRENT</types1:State>
+      <types1:ProcessGroup/>
+      <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
+      <types1:CreationDate>2026-07-27T17:44:00Z</types1:CreationDate>
+      <types1:ModifiedBy/>
+      <types1:PublicationStatus>unpublished</types1:PublicationStatus>
+      <types1:Entry>
+         <process xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2010/10/avosScreenflow.xsd"
+                  xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
+                  xmlns:list="urn:activevos:spi:list:functions"
+                  GUID="AwxVtpAsbduNEHRbWUeFYb"
+                  displayName="AddPhoneNumber_Process"
+                  name="AddPhoneNumber_Process"
+                  overrideAPIName="false">
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd">
+               <parameter name="personVinciId" direction="in" type="string"/>
+               <parameter name="contractId" direction="in" type="string"/>
+               <parameter name="phoneTypeCode" direction="in" type="string"/>
+               <parameter name="diallingCode" direction="in" type="string"/>
+               <parameter name="number" direction="in" type="string"/>
+               <parameter name="cpd_token" direction="in" type="string"/>
+            </parameterSet>
+            <appliesTo/>
+            <description>Scenario 3 (Phone Number Changes) per the functional design. Wraps CPD API 3.2.5 (Add Phone Number). Invoked by the Orchestrator once per entry in PhonesToAdd (build guide 4.11-4.12, 4.15 step 5).</description>
+            <tags/>
+            <generator>Informatica Process Designer 11</generator>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 - see README_IICS_BUILD_NOTES.md for schema caveats. phoneTypeCode mapping (Dayforce contact/phone type -&gt; CPD phoneTypeCode) is a design-doc Open Item; the Orchestrator's phone-comparison step is where that mapping needs to be applied before invoking this sub-process.</notes>
+            <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
+               <rest/>
+            </deployment>
+            <extData>
+               <nvpair name="treatEmptyStringAsNotNull">false</nvpair>
+               <nvpair name="treatEmptyObjectListAsArray">true</nvpair>
+            </extData>
+            <flow id="f7-addphone">
+               <start id="start-addphone">
+                  <link id="l1" targetId="inv-addphone"/>
+               </start>
+               <invoke id="inv-addphone" connector="cnctr_cpd_get" action="AddPhoneNumber" title="Add CPD phone number">
+                  <inputMapping>
+                     <map source="personVinciId" target="personVinciId"/>
+                     <map source="contractId" target="contractId"/>
+                     <map source="phoneTypeCode" target="phoneTypeCode"/>
+                     <map source="diallingCode" target="diallingCode"/>
+                     <map source="number" target="number"/>
+                     <map source="cpd_token" target="cpd_token"/>
+                  </inputMapping>
+                  <link id="l2" targetId="end-addphone"/>
+               </invoke>
+               <end id="end-addphone">
+                  <title>End</title>
+               </end>
+            </flow>
+         </process>
+      </types1:Entry>
+      <types1:GUID>AwxVtpAsbduNEHRbWUeFYb</types1:GUID>
+      <types1:DisplayName>AddPhoneNumber_Process</types1:DisplayName>
+   </types1:Item>
+   <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
+</aetgt:getResponse>

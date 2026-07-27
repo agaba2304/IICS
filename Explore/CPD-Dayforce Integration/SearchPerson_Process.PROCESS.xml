@@ -1,0 +1,76 @@
+<aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
+                   xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
+   <types1:Item>
+      <types1:EntryId>DB1JRZkPV3HvqKV1vfjqgb-gt-00000003-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
+      <types1:Name>SearchPerson_Process</types1:Name>
+      <types1:MimeType>application/xml+process</types1:MimeType>
+      <types1:Description>Build guide 4.6. Searches CPD for an existing person by Ext Id / VINCI ID.</types1:Description>
+      <types1:AppliesTo/>
+      <types1:Tags/>
+      <types1:VersionLabel>1.0</types1:VersionLabel>
+      <types1:State>CURRENT</types1:State>
+      <types1:ProcessGroup/>
+      <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
+      <types1:CreationDate>2026-07-27T17:44:00Z</types1:CreationDate>
+      <types1:ModifiedBy/>
+      <types1:PublicationStatus>unpublished</types1:PublicationStatus>
+      <types1:Entry>
+         <process xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2010/10/avosScreenflow.xsd"
+                  xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
+                  xmlns:list="urn:activevos:spi:list:functions"
+                  GUID="DB1JRZkPV3HvqKV1vfjqgb"
+                  displayName="SearchPerson_Process"
+                  name="SearchPerson_Process"
+                  overrideAPIName="false">
+            <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd">
+               <parameter name="EmployeeNumber" direction="in" type="string" description="Dayforce EmployeeNumber, used as the CPD external identifier"/>
+               <parameter name="cpd_token" direction="in" type="string" description="CPD bearer token"/>
+               <parameter name="PersonFound" direction="out" type="boolean" description="True if SearchPersonByExtId returned a matching person"/>
+               <parameter name="personVinciId" direction="out" type="string" description="Existing VINCI ID, populated only when PersonFound=true"/>
+               <parameter name="ExistingContractId" direction="out" type="string" description="contractId of the person's active contract, populated only when PersonFound=true"/>
+               <parameter name="ExistingPhones" direction="out" type="string" isList="true" description="Person's existing CPD phone entries, if the search response includes them"/>
+            </parameterSet>
+            <appliesTo/>
+            <description>Wraps CPD API 3.2.1 (Search Person, Ext Id / VINCI ID match per project decision). Called once per employee by the Orchestrator (build guide 4.15, step 3), immediately before the Create/Update decision (build guide 4.7).</description>
+            <tags/>
+            <generator>Informatica Process Designer 11</generator>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 - see README_IICS_BUILD_NOTES.md for schema caveats. KNOWN LIMITATION carried over from the design doc (section 3.2.1): Ext Id/VINCI ID matching only finds a person once already assigned by a prior successful run, so it cannot on its own distinguish a genuine new hire from one whose CPD assignment failed/hasn't propagated yet. PersonFound=false is therefore treated as "create" by the Orchestrator's Decision step per the functional scenarios; this is a design tradeoff already accepted when choosing this match criteria over name+DOB, not a bug in this sub-process. The sample GetPersons.xml response used to build this mapping did not include a phoneNumber list, so ExistingPhones may come back empty even for persons with phones on file - confirm against a live CPD test call whether phones are returned inline or need a separate call before the phone-reconciliation logic (build guide 4.11) is finalized.</notes>
+            <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
+               <rest/>
+            </deployment>
+            <extData>
+               <nvpair name="treatEmptyStringAsNotNull">false</nvpair>
+               <nvpair name="treatEmptyObjectListAsArray">true</nvpair>
+            </extData>
+            <flow id="f3-search">
+               <start id="start-search">
+                  <link id="l1" targetId="inv-search"/>
+               </start>
+               <invoke id="inv-search" connector="cnctr_cpd_get" action="SearchPersonByExtId" title="Search CPD person by ext id">
+                  <inputMapping>
+                     <map source="EmployeeNumber" target="EmployeeNumber"/>
+                     <map source="cpd_token" target="cpd_token"/>
+                  </inputMapping>
+                  <outputMapping>
+                     <map source="response" target="rawSearchResponse"/>
+                  </outputMapping>
+                  <link id="l2" targetId="dp-mapSearch"/>
+               </invoke>
+               <dataProcess id="dp-mapSearch" title="Map search result / detect match">
+                  <expression target="PersonFound">not isNull(rawSearchResponse) and count(rawSearchResponse) &gt; 0</expression>
+                  <expression target="personVinciId">iif(PersonFound, rawSearchResponse[0].personVinciId, null)</expression>
+                  <expression target="ExistingContractId">iif(PersonFound, list:first(rawSearchResponse[0].contracts, 'isActive = true').contractId, null)</expression>
+                  <expression target="ExistingPhones">iif(PersonFound, rawSearchResponse[0].phoneNumbers, list:empty())</expression>
+                  <link id="l3" targetId="end-search"/>
+               </dataProcess>
+               <end id="end-search">
+                  <title>End</title>
+               </end>
+            </flow>
+         </process>
+      </types1:Entry>
+      <types1:GUID>DB1JRZkPV3HvqKV1vfjqgb</types1:GUID>
+      <types1:DisplayName>SearchPerson_Process</types1:DisplayName>
+   </types1:Item>
+   <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
+</aetgt:getResponse>
