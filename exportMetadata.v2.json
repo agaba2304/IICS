@@ -1,0 +1,327 @@
+{
+  "name": "IICSExport",
+  "sourceOrgId": "dqgO4TJmW0zgqi7hnZL8i0",
+  "sourceOrgName": "VINCI Construction USA - DEV",
+  "exportedObjects": [
+    {
+      "objectGuid": "4eE2MYnrQWFgBzm3wuvKQW",
+      "objectName": "cnctr-test-dayforce",
+      "objectType": "AI_SERVICE_CONNECTOR",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "fWdvSzYLnzYLnzY-gt-11633211-2026-06-11T15:45:14.088Z::svc.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "9YzFkZEq4V5kJlHTF4U0gK",
+      "objectName": "Prcs_Dayforce_CPD",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "oEAVR3aaa-gt-16489539-2026-07-27T17:44:00.323Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "aDMzhpLojjoke0pnhn1H4E",
+      "objectName": "cnctr_cpd_get",
+      "objectType": "AI_SERVICE_CONNECTOR",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "QREhNWIsoZduD2L-gt-28543298-2026-06-19T18:48:58.683Z::svc.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "6KXDYfx2SWekF2qeCjXiCr",
+      "objectName": "CPD-Dayforce Integration",
+      "objectType": "Project",
+      "path": "/Explore",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 0,
+          "minor": 0
+        },
+        "repoInfo": null,
+        "objectRefs": [],
+        "contextAttributes": [],
+        "additionalInfo": {
+          "description": "Bidirectional Integration between CPD and dayforce",
+          "contentType": "Binary",
+          "documentState": "COMPLETE"
+        }
+      }
+    },
+    {
+      "objectGuid": "3oBo3euvAbRVfbijBuFPeO",
+      "objectName": "GetChangedEmployees_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "3oBo3euvAbRVfbijBuFPeO-gt-00000001-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "KPffEx7EOwfjp7pn7kzZ2M",
+      "objectName": "GetEmployeeDetail_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "KPffEx7EOwfjp7pn7kzZ2M-gt-00000002-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "DB1JRZkPV3HvqKV1vfjqgb",
+      "objectName": "SearchPerson_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "DB1JRZkPV3HvqKV1vfjqgb-gt-00000003-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "ugYTHbESlUs3xY4PcfoFaW",
+      "objectName": "CreatePersonAndContract_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "ugYTHbESlUs3xY4PcfoFaW-gt-00000004-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "TUaU8PTn1SEcDVyUTRKb6U",
+      "objectName": "UpdatePersonAndContract_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "TUaU8PTn1SEcDVyUTRKb6U-gt-00000005-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "zBI0ZwpxPB1sKMv6wHgpd1",
+      "objectName": "WriteVinciId_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "zBI0ZwpxPB1sKMv6wHgpd1-gt-00000006-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "AwxVtpAsbduNEHRbWUeFYb",
+      "objectName": "AddPhoneNumber_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "AwxVtpAsbduNEHRbWUeFYb-gt-00000007-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "2MQBdKskt65bUvaVMnxm9g",
+      "objectName": "UpdatePhoneNumber_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "2MQBdKskt65bUvaVMnxm9g-gt-00000008-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "MrEEevrr6RSALfwqq4ZHmt",
+      "objectName": "DeletePhoneNumber_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "MrEEevrr6RSALfwqq4ZHmt-gt-00000009-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "xpZXrmJaYOBu7TJpkrH1WV",
+      "objectName": "ErrorAlert_Process",
+      "objectType": "PROCESS",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "xpZXrmJaYOBu7TJpkrH1WV-gt-00000010-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,390 @@
+<aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
+                   xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
+   <types1:Item>
+      <types1:EntryId>QREhNWIsoZduD2L-gt-28543298-2026-06-19T18:48:58.683Z::svc.xml</types1:EntryId>
+      <types1:Name>cnctr_cpd_get</types1:Name>
+      <types1:MimeType>application/xml+businesssconnector</types1:MimeType>
+      <types1:Description/>
+      <types1:AppliesTo/>
+      <types1:Tags/>
+      <types1:VersionLabel>1.0</types1:VersionLabel>
+      <types1:State>CURRENT</types1:State>
+      <types1:ProcessGroup/>
+      <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
+      <types1:CreationDate>2026-06-19T18:48:59Z</types1:CreationDate>
+      <types1:ModifiedBy>abdul.mannuru@hubbard.com.dev</types1:ModifiedBy>
+      <types1:ModificationDate>2026-07-27T17:44:00Z</types1:ModificationDate>
+      <types1:PublicationStatus>unpublished</types1:PublicationStatus>
+      <types1:Entry>
+         <!--
+           NOTE: CPD hostname is a placeholder ({cpd-host}) pending client confirmation of the live
+           CPD environment host (build guide section 3.2 / 4.1). The pre-existing "Get Persons" and
+           "Get purchase orders" actions are left pointed at the real api-tst.vinci-construction.net
+           test host since that endpoint was already validated; only their hardcoded Bearer tokens
+           have been parameterized to {cpd_token}, removing the live secret that was committed here.
+           All new actions below implement build guide section 3.2 and use {cpd_token} for auth,
+           to be sourced from the CPD REST V2 Connection once its auth mechanism is confirmed.
+         -->
+         <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
+                            agentOnly="false"
+                            debug="false"
+                            displayName="cnctr_cpd_get"
+                            label=""
+                            name="cnctr_cpd_get"
+                            uuid="08cf3af9-56cf-4433-9a42-f9c43b895333">
+            <description>CPD REST actions for the CPD-Dayforce employee integration (Functional Design &amp; API Build Guide v1.0, section 3.2).</description>
+            <tags/>
+            <connectionAttributes xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"/>
+            <actions>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="Get Persons"
+                       maxRedirects="100"
+                       name="Get Persons"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>Original dummy/test call against the validated test host. Retained for ad hoc use; SearchPersonByExtId below is what the orchestrator actually calls.</description>
+                  <input>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons?lastName=chaitas&amp;amp;offset=0&amp;amp;limit=25"
+                                        verb="GET">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Accept">application/json</header>
+                           <header name="Content-Type">application/json</header>
+                        </httpHeaders>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="Get purchase orders"
+                       maxRedirects="100"
+                       name="Get purchase orders"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>Not part of the Dayforce-CPD employee integration; retained from the original dummy connector. Secret removed/parameterized only.</description>
+                  <input>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://api-tst.vinci-construction.net/procurement/sap/v1/purchase-orders?offset=0&amp;amp;limit=15&amp;amp;itemLimit=30&amp;amp;purchaseOrderTypes_not=ZWKS&#xA;"
+                                        verb="GET">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Content-Type">application/json</header>
+                           <header name="Accept">application/json</header>
+                        </httpHeaders>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="SearchPersonByExtId"
+                       maxRedirects="100"
+                       name="SearchPersonByExtId"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.1 Search Person (Interface i639), Ext Id / VINCI ID match. Matches on the external identifier pair (extSystemId=11 for Dayforce, per the Create Person payload) rather than name+DOB. NOTE (from design doc): this criteria only finds a person once a VINCI ID/ext id has already been assigned by a prior run - it cannot by itself distinguish a true brand-new hire from an API/timing miss, so PersonFound=false is treated as "create" per the functional scenarios. Consumed by SearchPerson_Process (build guide 4.6).</description>
+                  <input>
+                     <field description="Dayforce EmployeeNumber, used as the CPD external identifier value" name="EmployeeNumber" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons?extId={EmployeeNumber}&amp;amp;extSystemId=11"
+                                        verb="GET">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Accept">application/json</header>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="CreatePerson"
+                       maxRedirects="100"
+                       name="CreatePerson"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.2 Create Person (Interface i619). CPD generates and returns a new personVinciId. Consumed by CreatePersonAndContract_Process (build guide 4.8).</description>
+                  <input>
+                     <field description="Dayforce EmployeeNumber" name="EmployeeNumber" type="string"/>
+                     <field description="Dayforce LastName" name="LastName" type="string"/>
+                     <field description="Dayforce FirstName" name="FirstName" type="string"/>
+                     <field description="Preferred last name, defaults to LastName if not set in Dayforce" name="PreferredLastName_or_LastName" type="string"/>
+                     <field description="Preferred first name, defaults to FirstName if not set in Dayforce" name="PreferredFirstName_or_FirstName" type="string"/>
+                     <field description="Dayforce BirthDate" name="BirthDate" type="string"/>
+                     <field description="Dayforce SeniorityDate" name="SeniorityDate" type="string"/>
+                     <field description="Dayforce culture/locale mapped to a CPD language ISO code" name="mapped_language_code" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons"
+                                        verb="POST">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Content-Type">application/json</header>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                        <body>{
+   "externalIdentifiers": [{ "extId": "{EmployeeNumber}", "extSystemId": 11 }],
+   "birthLastName": "{LastName}",
+   "birthFirstName": "{FirstName}",
+   "preferredLastName": "{PreferredLastName_or_LastName}",
+   "preferredFirstName": "{PreferredFirstName_or_FirstName}",
+   "birthDate": "{BirthDate}",
+   "salutationCode": "Undefined",
+   "groupEntryDate": "{SeniorityDate}",
+   "preferredLanguageIsoCode": "{mapped_language_code}",
+   "directoryDisplayMode": 1
+}</body>
+                     </restSimpleBinding>
+                  </binding>
+                  <output>
+                     <field description="CPD-generated VINCI ID for the new person"
+                            name="personVinciId"
+                            property="personVinciId"
+                            type="string"/>
+                  </output>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="UpdatePerson"
+                       maxRedirects="100"
+                       name="UpdatePerson"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.3 Update Person (Interface i619). Full overwrite of person fields for an existing VINCI ID. Consumed by UpdatePersonAndContract_Process (build guide 4.9).</description>
+                  <input>
+                     <field description="Existing CPD VINCI ID for this person" name="personVinciId" type="string"/>
+                     <field description="Dayforce LastName" name="LastName" type="string"/>
+                     <field description="Dayforce FirstName" name="FirstName" type="string"/>
+                     <field description="Preferred last name, defaults to LastName if not set in Dayforce" name="PreferredLastName_or_LastName" type="string"/>
+                     <field description="Preferred first name, defaults to FirstName if not set in Dayforce" name="PreferredFirstName_or_FirstName" type="string"/>
+                     <field description="Dayforce BirthDate" name="BirthDate" type="string"/>
+                     <field description="Dayforce culture/locale mapped to a CPD language ISO code" name="mapped_language_code" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons/{personVinciId}"
+                                        verb="PATCH">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Content-Type">application/json</header>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                        <body>{
+   "birthLastName": "{LastName}",
+   "birthFirstName": "{FirstName}",
+   "preferredLastName": "{PreferredLastName_or_LastName}",
+   "preferredFirstName": "{PreferredFirstName_or_FirstName}",
+   "birthDate": "{BirthDate}",
+   "preferredLanguageIsoCode": "{mapped_language_code}"
+}</body>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="CreateOrUpdateContract"
+                       maxRedirects="100"
+                       name="CreateOrUpdateContract"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.4 Create / Update Contract. Single PATCH endpoint used on both the Create and Update paths. OPEN ITEM (design doc): for a brand-new person CPD has not yet issued a contractId, so the Create path's contractId source needs client confirmation (e.g. CPD auto-creates a default contract on person creation, or contractId is client-supplied for upsert) - see Open Items. Consumed by CreatePersonAndContract_Process and UpdatePersonAndContract_Process (build guide 4.8-4.9).</description>
+                  <input>
+                     <field description="CPD VINCI ID for this person" name="personVinciId" type="string"/>
+                     <field description="CPD contract id (existing on Update; TBD source on Create - see Open Items)" name="contractId" type="string"/>
+                     <field description="Dayforce HireDate" name="HireDate" type="string"/>
+                     <field description="Dayforce EmploymentStatus effective-to date" name="EmploymentStatus_EffectiveTo" type="string"/>
+                     <field description="Resolved CPD organizational unit id for this employee's Dayforce org (COR)" name="resolved_COR_ouId" type="string"/>
+                     <field description="Dayforce Job title" name="Job" type="string"/>
+                     <field description="Dayforce primary work assignment ledger/cost-center code" name="Primary_Work_Assignment_Ledger_Code" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}"
+                                        verb="PATCH">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Content-Type">application/json</header>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                        <body>{
+   "startDate": "{HireDate}",
+   "endDate": "{EmploymentStatus_EffectiveTo}",
+   "staffTypeCode": 1,
+   "contractTypeCode": "Permanent",
+   "isLocalContract": false,
+   "organizationalUnitAssignment": { "ouId": "{resolved_COR_ouId}" },
+   "operationalJobTitle": "{Job}",
+   "payrollJobTitle": "{Job}",
+   "costCenterCode": "{Primary_Work_Assignment_Ledger_Code}"
+}</body>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="AddPhoneNumber"
+                       maxRedirects="100"
+                       name="AddPhoneNumber"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.5 Add Phone Number. Consumed by AddPhoneNumber_Process, invoked once per entry in PhonesToAdd (build guide 4.12).</description>
+                  <input>
+                     <field description="CPD VINCI ID for this person" name="personVinciId" type="string"/>
+                     <field description="CPD contract id" name="contractId" type="string"/>
+                     <field description="CPD phone type code (mapping TBD - see Open Items)" name="phoneTypeCode" type="string"/>
+                     <field description="Parsed international dialling code" name="diallingCode" type="string"/>
+                     <field description="Parsed phone number" name="number" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber"
+                                        verb="POST">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Content-Type">application/json</header>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                        <body>{
+   "phoneTypeCode": "{phoneTypeCode}",
+   "diallingCode": "{diallingCode}",
+   "number": "{number}"
+}</body>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="UpdatePhoneNumber"
+                       maxRedirects="100"
+                       name="UpdatePhoneNumber"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.6 Update Phone Number. Consumed by UpdatePhoneNumber_Process, invoked once per entry in PhonesToUpdate (build guide 4.12).</description>
+                  <input>
+                     <field description="CPD VINCI ID for this person" name="personVinciId" type="string"/>
+                     <field description="CPD contract id" name="contractId" type="string"/>
+                     <field description="CPD phone type code identifying which phone entry to update" name="phoneTypeCode" type="string"/>
+                     <field description="Parsed international dialling code" name="diallingCode" type="string"/>
+                     <field description="Parsed phone number" name="number" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber/{phoneTypeCode}"
+                                        verb="PUT">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Content-Type">application/json</header>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                        <body>{
+   "diallingCode": "{diallingCode}",
+   "number": "{number}"
+}</body>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="DeletePhoneNumber"
+                       maxRedirects="100"
+                       name="DeletePhoneNumber"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description>3.2.7 Delete Phone Number. Consumed by DeletePhoneNumber_Process, invoked once per entry in PhonesToDelete (build guide 4.12).</description>
+                  <input>
+                     <field description="CPD VINCI ID for this person" name="personVinciId" type="string"/>
+                     <field description="CPD contract id" name="contractId" type="string"/>
+                     <field description="CPD phone type code identifying which phone entry to delete" name="phoneTypeCode" type="string"/>
+                     <field description="CPD API bearer token" name="cpd_token" type="string"/>
+                  </input>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber/{phoneTypeCode}"
+                                        verb="DELETE">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
+                        <httpHeaders>
+                           <header name="Authorization">Bearer {cpd_token}</header>
+                        </httpHeaders>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+            </actions>
+            <objects/>
+         </businessConnector>
+      </types1:Entry>
+      <types1:GUID>aDMzhpLojjoke0pnhn1H4E</types1:GUID>
+      <types1:DisplayName>cnctr_cpd_get</types1:DisplayName>
+   </types1:Item>
+   <types1:CurrentServerDateTime>2026-07-27T17:46:15.102Z</types1:CurrentServerDateTime>
+</aetgt:getResponse>
