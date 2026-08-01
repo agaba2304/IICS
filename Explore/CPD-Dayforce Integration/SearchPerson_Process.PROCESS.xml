@@ -73,7 +73,7 @@ The sample GetPersons.xml response used to build this mapping did not include a 
                </start>
                <service id="svc-search">
                   <title>Search CPD person by ext id</title>
-                  <serviceName>cnctr_cpd_get:SearchPersonByExtId</serviceName>
+                  <serviceName>SvcConn_Get_Post_Cpd:SearchPersonByExtId</serviceName>
                   <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
                   <serviceInput>
                      <parameter name="EmployeeNumber" source="field" updatable="true">input.in_EmployeeNumber</parameter>

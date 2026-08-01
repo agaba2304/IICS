@@ -2,7 +2,8 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>QREhNWIsoZduD2L-gt-28543298-2026-06-19T18:48:58.683Z::svc.xml</types1:EntryId>
-      <types1:Name>cnctr_cpd_get</types1:Name>
+      <types1:Name>SvcConn_Get_Post_Cpd</types1:Name>
+      <types1:ParentFlowIds>nYmWR7hsAVR3aaa-gt-17355173-2026-08-01T20:49:13.219Z::conn.xml</types1:ParentFlowIds>
       <types1:MimeType>application/xml+businesssconnector</types1:MimeType>
       <types1:Description/>
       <types1:AppliesTo/>
@@ -13,17 +14,20 @@
       <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
       <types1:CreationDate>2026-06-19T18:48:59Z</types1:CreationDate>
       <types1:ModifiedBy>abdul.mannuru@hubbard.com.dev</types1:ModifiedBy>
-      <types1:ModificationDate>2026-07-27T17:44:00Z</types1:ModificationDate>
-      <types1:PublicationStatus>unpublished</types1:PublicationStatus>
+      <types1:ModificationDate>2026-08-01T20:48:17Z</types1:ModificationDate>
+      <types1:PublicationStatus>published</types1:PublicationStatus>
+      <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
+      <types1:PublicationDate>2026-08-01T20:48:27Z</types1:PublicationDate>
+      <types1:PublishedContributionId>project:/rt.connector/SvcConn_Get_Post_Cpd/SvcConn_Get_Post_Cpd_svcDef.xml</types1:PublishedContributionId>
       <types1:Entry>
          <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
                             agentOnly="false"
                             debug="false"
-                            displayName="cnctr_cpd_get"
+                            displayName="SvcConn_Get_Post_Cpd"
                             label=""
-                            name="cnctr_cpd_get"
+                            name="SvcConn_Get_Post_Cpd"
                             uuid="08cf3af9-56cf-4433-9a42-f9c43b895333">
-            <description>CPD REST actions for the CPD-Dayforce employee integration (Functional Design &amp; API Build Guide v1.0, section 3.2).</description>
+            <description/>
             <tags/>
             <connectionAttributes xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"/>
             <actions>
@@ -37,7 +41,10 @@
                        responseEncoding="">
                   <description>Original dummy/test call against the validated test host. Retained for ad hoc use; SearchPersonByExtId below is what the orchestrator actually calls.</description>
                   <input>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -67,7 +74,10 @@
                        responseEncoding="">
                   <description>Not part of the Dayforce-CPD employee integration; retained from the original dummy connector. Secret removed/parameterized only.</description>
                   <input>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -97,8 +107,14 @@
                        responseEncoding="">
                   <description>3.2.1 Search Person (Interface i639), Ext Id / VINCI ID match. Matches on the external identifier pair (extSystemId=11 for Dayforce, per the Create Person payload) rather than name+DOB. NOTE (from design doc): this criteria only finds a person once a VINCI ID/ext id has already been assigned by a prior run - it cannot by itself distinguish a true brand-new hire from an API/timing miss, so PersonFound=false is treated as "create" per the functional scenarios. Consumed by SearchPerson_Process (build guide 4.6).</description>
                   <input>
-                     <parameter description="Dayforce EmployeeNumber, used as the CPD external identifier value" name="EmployeeNumber" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="Dayforce EmployeeNumber, used as the CPD external identifier value"
+                                name="EmployeeNumber"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -127,15 +143,42 @@
                        responseEncoding="">
                   <description>3.2.2 Create Person (Interface i619). CPD generates and returns a new personVinciId. Consumed by CreatePersonAndContract_Process (build guide 4.8).</description>
                   <input>
-                     <parameter description="Dayforce EmployeeNumber" name="EmployeeNumber" type="string" required="false"/>
-                     <parameter description="Dayforce LastName" name="LastName" type="string" required="false"/>
-                     <parameter description="Dayforce FirstName" name="FirstName" type="string" required="false"/>
-                     <parameter description="Preferred last name, defaults to LastName if not set in Dayforce" name="PreferredLastName_or_LastName" type="string" required="false"/>
-                     <parameter description="Preferred first name, defaults to FirstName if not set in Dayforce" name="PreferredFirstName_or_FirstName" type="string" required="false"/>
-                     <parameter description="Dayforce BirthDate" name="BirthDate" type="string" required="false"/>
-                     <parameter description="Dayforce SeniorityDate" name="SeniorityDate" type="string" required="false"/>
-                     <parameter description="Dayforce culture/locale mapped to a CPD language ISO code" name="mapped_language_code" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="Dayforce EmployeeNumber"
+                                name="EmployeeNumber"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce LastName"
+                                name="LastName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce FirstName"
+                                name="FirstName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Preferred last name, defaults to LastName if not set in Dayforce"
+                                name="PreferredLastName_or_LastName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Preferred first name, defaults to FirstName if not set in Dayforce"
+                                name="PreferredFirstName_or_FirstName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce BirthDate"
+                                name="BirthDate"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce SeniorityDate"
+                                name="SeniorityDate"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce culture/locale mapped to a CPD language ISO code"
+                                name="mapped_language_code"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -181,14 +224,38 @@
                        responseEncoding="">
                   <description>3.2.3 Update Person (Interface i619). Full overwrite of person fields for an existing VINCI ID. Consumed by UpdatePersonAndContract_Process (build guide 4.9).</description>
                   <input>
-                     <parameter description="Existing CPD VINCI ID for this person" name="personVinciId" type="string" required="false"/>
-                     <parameter description="Dayforce LastName" name="LastName" type="string" required="false"/>
-                     <parameter description="Dayforce FirstName" name="FirstName" type="string" required="false"/>
-                     <parameter description="Preferred last name, defaults to LastName if not set in Dayforce" name="PreferredLastName_or_LastName" type="string" required="false"/>
-                     <parameter description="Preferred first name, defaults to FirstName if not set in Dayforce" name="PreferredFirstName_or_FirstName" type="string" required="false"/>
-                     <parameter description="Dayforce BirthDate" name="BirthDate" type="string" required="false"/>
-                     <parameter description="Dayforce culture/locale mapped to a CPD language ISO code" name="mapped_language_code" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="Existing CPD VINCI ID for this person"
+                                name="personVinciId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce LastName"
+                                name="LastName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce FirstName"
+                                name="FirstName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Preferred last name, defaults to LastName if not set in Dayforce"
+                                name="PreferredLastName_or_LastName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Preferred first name, defaults to FirstName if not set in Dayforce"
+                                name="PreferredFirstName_or_FirstName"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce BirthDate"
+                                name="BirthDate"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce culture/locale mapped to a CPD language ISO code"
+                                name="mapped_language_code"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -225,14 +292,38 @@
                        responseEncoding="">
                   <description>3.2.4 Create / Update Contract. Single PATCH endpoint used on both the Create and Update paths. OPEN ITEM (design doc): for a brand-new person CPD has not yet issued a contractId, so the Create path's contractId source needs client confirmation (e.g. CPD auto-creates a default contract on person creation, or contractId is client-supplied for upsert) - see Open Items. Consumed by CreatePersonAndContract_Process and UpdatePersonAndContract_Process (build guide 4.8-4.9).</description>
                   <input>
-                     <parameter description="CPD VINCI ID for this person" name="personVinciId" type="string" required="false"/>
-                     <parameter description="CPD contract id (existing on Update; TBD source on Create - see Open Items)" name="contractId" type="string" required="false"/>
-                     <parameter description="Dayforce HireDate" name="HireDate" type="string" required="false"/>
-                     <parameter description="Dayforce EmploymentStatus effective-to date" name="EmploymentStatus_EffectiveTo" type="string" required="false"/>
-                     <parameter description="Resolved CPD organizational unit id for this employee's Dayforce org (COR)" name="resolved_COR_ouId" type="string" required="false"/>
-                     <parameter description="Dayforce Job title" name="Job" type="string" required="false"/>
-                     <parameter description="Dayforce primary work assignment ledger/cost-center code" name="Primary_Work_Assignment_Ledger_Code" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="CPD VINCI ID for this person"
+                                name="personVinciId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD contract id (existing on Update; TBD source on Create - see Open Items)"
+                                name="contractId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce HireDate"
+                                name="HireDate"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce EmploymentStatus effective-to date"
+                                name="EmploymentStatus_EffectiveTo"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Resolved CPD organizational unit id for this employee's Dayforce org (COR)"
+                                name="resolved_COR_ouId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce Job title"
+                                name="Job"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce primary work assignment ledger/cost-center code"
+                                name="Primary_Work_Assignment_Ledger_Code"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -272,12 +363,30 @@
                        responseEncoding="">
                   <description>3.2.5 Add Phone Number. Consumed by AddPhoneNumber_Process, invoked once per entry in PhonesToAdd (build guide 4.12).</description>
                   <input>
-                     <parameter description="CPD VINCI ID for this person" name="personVinciId" type="string" required="false"/>
-                     <parameter description="CPD contract id" name="contractId" type="string" required="false"/>
-                     <parameter description="CPD phone type code (mapping TBD - see Open Items)" name="phoneTypeCode" type="string" required="false"/>
-                     <parameter description="Parsed international dialling code" name="diallingCode" type="string" required="false"/>
-                     <parameter description="Parsed phone number" name="number" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="CPD VINCI ID for this person"
+                                name="personVinciId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD contract id"
+                                name="contractId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD phone type code (mapping TBD - see Open Items)"
+                                name="phoneTypeCode"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Parsed international dialling code"
+                                name="diallingCode"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Parsed phone number"
+                                name="number"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -311,12 +420,30 @@
                        responseEncoding="">
                   <description>3.2.6 Update Phone Number. Consumed by UpdatePhoneNumber_Process, invoked once per entry in PhonesToUpdate (build guide 4.12).</description>
                   <input>
-                     <parameter description="CPD VINCI ID for this person" name="personVinciId" type="string" required="false"/>
-                     <parameter description="CPD contract id" name="contractId" type="string" required="false"/>
-                     <parameter description="CPD phone type code identifying which phone entry to update" name="phoneTypeCode" type="string" required="false"/>
-                     <parameter description="Parsed international dialling code" name="diallingCode" type="string" required="false"/>
-                     <parameter description="Parsed phone number" name="number" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="CPD VINCI ID for this person"
+                                name="personVinciId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD contract id"
+                                name="contractId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD phone type code identifying which phone entry to update"
+                                name="phoneTypeCode"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Parsed international dialling code"
+                                name="diallingCode"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Parsed phone number"
+                                name="number"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -349,10 +476,22 @@
                        responseEncoding="">
                   <description>3.2.7 Delete Phone Number. Consumed by DeletePhoneNumber_Process, invoked once per entry in PhonesToDelete (build guide 4.12).</description>
                   <input>
-                     <parameter description="CPD VINCI ID for this person" name="personVinciId" type="string" required="false"/>
-                     <parameter description="CPD contract id" name="contractId" type="string" required="false"/>
-                     <parameter description="CPD phone type code identifying which phone entry to delete" name="phoneTypeCode" type="string" required="false"/>
-                     <parameter description="CPD API bearer token" name="cpd_token" type="string" required="false"/>
+                     <parameter description="CPD VINCI ID for this person"
+                                name="personVinciId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD contract id"
+                                name="contractId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD phone type code identifying which phone entry to delete"
+                                name="phoneTypeCode"
+                                required="false"
+                                type="string"/>
+                     <parameter description="CPD API bearer token"
+                                name="cpd_token"
+                                required="false"
+                                type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -375,7 +514,7 @@
          </businessConnector>
       </types1:Entry>
       <types1:GUID>aDMzhpLojjoke0pnhn1H4E</types1:GUID>
-      <types1:DisplayName>cnctr_cpd_get</types1:DisplayName>
+      <types1:DisplayName>SvcConn_Get_Post_Cpd</types1:DisplayName>
    </types1:Item>
-   <types1:CurrentServerDateTime>2026-07-27T17:46:15.102Z</types1:CurrentServerDateTime>
+   <types1:CurrentServerDateTime>2026-08-01T20:50:06.365Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

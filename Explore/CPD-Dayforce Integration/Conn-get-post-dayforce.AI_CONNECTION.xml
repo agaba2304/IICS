@@ -1,0 +1,45 @@
+<aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
+                   xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
+   <types1:Item>
+      <types1:EntryId>k8jKBmeK3jhBjop-gt-17305514-2026-08-01T20:25:50.172Z::conn.xml</types1:EntryId>
+      <types1:Name>Conn-get-post-dayforce</types1:Name>
+      <types1:MimeType>application/xml+connection</types1:MimeType>
+      <types1:Description/>
+      <types1:AppliesTo/>
+      <types1:Tags>.agent:hubdevinfoadm02</types1:Tags>
+      <types1:VersionLabel>1.0</types1:VersionLabel>
+      <types1:State>CURRENT</types1:State>
+      <types1:ProcessGroup/>
+      <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
+      <types1:CreationDate>2026-08-01T20:25:50Z</types1:CreationDate>
+      <types1:ModifiedBy>abdul.mannuru@hubbard.com.dev</types1:ModifiedBy>
+      <types1:ModificationDate>2026-08-01T20:47:05Z</types1:ModificationDate>
+      <types1:PublicationStatus>published</types1:PublicationStatus>
+      <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
+      <types1:PublicationDate>2026-08-01T20:47:17Z</types1:PublicationDate>
+      <types1:PublishedContributionId>project:/rt.connection/Conn-get-post-dayforce/Conn-get-post-dayforce.conn.xml</types1:PublishedContributionId>
+      <types1:Entry>
+         <connection xmlns="http://schemas.informatica.com/socrates/data-services/2014/04/avosConnections.xsd"
+                     GUID="null"
+                     displayName="Conn-get-post-dayforce"
+                     label="Conn-get-post-dayforce"
+                     name="Conn-get-post-dayforce">
+            <description/>
+            <tags>.agent:hubdevinfoadm02</tags>
+            <agent>hubdevinfoadm02</agent>
+            <businessConnector xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"
+                               agentOnly="false"
+                               connectorPath="project:/rt.connector/SvcConn_get_post_dayforce/SvcConn_get_post_dayforce_svcDef.xml"
+                               guid="kvKgEPCM9y7i86SJRF8qEK"
+                               name="SvcConn_get_post_dayforce"
+                               supportsConnectionTest="false"
+                               uuid="590b51ca-5d5b-411a-a762-69b2cbfda28c">
+               <description/>
+            </businessConnector>
+         </connection>
+      </types1:Entry>
+      <types1:GUID>jEzhmqLAzmBhdgzZWel1I2</types1:GUID>
+      <types1:DisplayName>Conn-get-post-dayforce</types1:DisplayName>
+   </types1:Item>
+   <types1:CurrentServerDateTime>2026-08-01T20:50:06.417Z</types1:CurrentServerDateTime>
+</aetgt:getResponse>
