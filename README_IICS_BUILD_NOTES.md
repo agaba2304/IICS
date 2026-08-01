@@ -55,10 +55,7 @@ Fixed by remapping every `<subflowGUID>` in `ProcessOneEmployee_Process` and `Pr
 | DeletePhoneNumber_Process | `MrEEevrr6RSALfwqq4ZHmt` | `jlM9u0QPKK9ltcTL4PIAGA` |
 | ErrorAlert_Process | `xpZXrmJaYOBu7TJpkrH1WV` | `1qQ4Y1EizO2lEjgLImYXaP` |
 
-**Remaining chicken-and-egg step**: `ProcessOneEmployee_Process` itself has never successfully imported yet, so its real post-import GUID is unknown. `Prcs_Dayforce_CPD`'s `<subflow>` call to `ProcessOneEmployee_Process` still uses the *authored* placeholder GUID (`VYIrQ7qaaXeojtBdb9dXHt`) and will very likely still fail on the next import for the same reason as above. Expected sequence:
-1. Re-import this package. `ProcessOneEmployee_Process` should now succeed (all 9 of *its* references are corrected). `Prcs_Dayforce_CPD` will likely still fail.
-2. Export the now-successfully-imported `ProcessOneEmployee_Process` and get its real GUID.
-3. One more fix to `Prcs_Dayforce_CPD`'s single `<subflow>` reference, then it should import cleanly too.
+**Resolved**: `ProcessOneEmployee_Process` imported successfully once its 9 references were corrected (real post-import GUID: `2jvNEMZkr0SeKWtoaSMfYh`, vs. the authored `VYIrQ7qaaXeojtBdb9dXHt`). `Prcs_Dayforce_CPD`'s `<subflow>` call to it has been updated to that real GUID. All 11 processes should now import and resolve cleanly.
 
 ## Revision history on the process XML schema
 
