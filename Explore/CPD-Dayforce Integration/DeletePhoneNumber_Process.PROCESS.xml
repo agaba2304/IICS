@@ -59,8 +59,8 @@
                </start>
                <service id="svc-deletephone">
                   <title>Delete CPD phone number</title>
-                  <serviceName>SvcConn_Get_Post_Cpd:DeletePhoneNumber</serviceName>
-                  <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
+                  <serviceName>Conn-get-post-cpd:DeletePhoneNumber</serviceName>
+                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
                      <parameter name="contractId" source="field" updatable="true">input.in_contractId</parameter>

@@ -103,8 +103,8 @@ OPEN ITEMS carried from the design doc (unresolved there too, not introduced by 
                </assignment>
                <service id="svc-createperson">
                   <title>Create CPD person</title>
-                  <serviceName>SvcConn_Get_Post_Cpd:CreatePerson</serviceName>
-                  <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
+                  <serviceName>Conn-get-post-cpd:CreatePerson</serviceName>
+                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="EmployeeNumber" source="field" updatable="true">input.in_EmployeeNumber</parameter>
                      <parameter name="LastName" source="field" updatable="true">input.in_LastName</parameter>
@@ -131,8 +131,8 @@ OPEN ITEMS carried from the design doc (unresolved there too, not introduced by 
                </assignment>
                <service id="svc-createcontract">
                   <title>Create CPD contract</title>
-                  <serviceName>SvcConn_Get_Post_Cpd:CreateOrUpdateContract</serviceName>
-                  <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
+                  <serviceName>Conn-get-post-cpd:CreateOrUpdateContract</serviceName>
+                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">output.out_NewPersonVinciId</parameter>
                      <parameter name="contractId" source="field" updatable="true">output.out_NewContractId</parameter>

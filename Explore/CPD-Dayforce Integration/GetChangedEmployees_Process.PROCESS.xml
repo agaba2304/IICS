@@ -98,8 +98,8 @@ else
                </assignment>
                <service id="svc-token">
                   <title>Get Dayforce token</title>
-                  <serviceName>SvcConn_get_post_dayforce:Get token</serviceName>
-                  <serviceGUID>kvKgEPCM9y7i86SJRF8qEK</serviceGUID>
+                  <serviceName>Conn-get-post-dayforce:Get token</serviceName>
+                  <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
                   <serviceInput>
                      <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
                      <parameter name="df_password" source="field" updatable="true">input.in_DayforcePassword</parameter>
@@ -113,8 +113,8 @@ else
                </assignment>
                <service id="svc-changed">
                   <title>Get changed employees</title>
-                  <serviceName>SvcConn_get_post_dayforce:GetChangedEmployees</serviceName>
-                  <serviceGUID>kvKgEPCM9y7i86SJRF8qEK</serviceGUID>
+                  <serviceName>Conn-get-post-dayforce:GetChangedEmployees</serviceName>
+                  <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
                   <serviceInput>
                      <parameter name="filterUpdatedStartDate" source="field" updatable="true">temp.tmp_filterUpdatedStartDate</parameter>
                      <parameter name="filterUpdatedEndDate" source="field" updatable="true">temp.tmp_filterUpdatedEndDate</parameter>
