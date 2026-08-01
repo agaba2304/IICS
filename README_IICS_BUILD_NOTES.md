@@ -21,14 +21,16 @@ Getting the two Service Connectors to actually **publish** took three fix rounds
 2. ~~`entireResponse="true"` output fields~~ — briefly suspected and reverted, then **confirmed valid** after finding a real published connector using it successfully. Not reintroduced in this pass (output fields were left empty/minimal on the working connectors as republished), but it's safe to add back if response-body access is needed later.
 3. **`<input><field .../></input>` instead of `<input><parameter .../></input>`** — this was the actual bug. `<field>` is only correct inside `<output>`; `<input>` uses `<parameter name=".." type=".." required=".."/>`. Confirmed both by a real published reference connector and by the user successfully publishing both connectors after this fix.
 
-Once published, the user created the Connections (`Conn-get-post-cpd`, `Conn-get-post-dayforce`, both `AI_CONNECTION` objects, both published, both bound to agent `hubdevinfoadm02`) and renamed/republished the Service Connectors as `SvcConn_Get_Post_Cpd` and `SvcConn_get_post_dayforce`. All `<service>` steps across every process file were updated to the new names and GUIDs:
+Once published, the user created the Connections (`Conn-get-post-cpd`, `Conn-get-post-dayforce`, both `AI_CONNECTION` objects, both published, both bound to agent `hubdevinfoadm02`) and renamed/republished the Service Connectors as `SvcConn_Get_Post_Cpd` and `SvcConn_get_post_dayforce`.
 
-| | Old name (superseded) | Current name | Connector GUID | Connection |
-|---|---|---|---|---|
-| CPD | `cnctr_cpd_get` | `SvcConn_Get_Post_Cpd` | `aDMzhpLojjoke0pnhn1H4E` (unchanged — same object, renamed in place) | `Conn-get-post-cpd` |
-| Dayforce | `cnctr-test-dayforce` | `SvcConn_get_post_dayforce` | `kvKgEPCM9y7i86SJRF8qEK` (new — recreated, not renamed) | `Conn-get-post-dayforce` |
+**Important, confirmed directly in Process Designer**: a `<service>` step's "Service Type" picker resolves by **Connection name**, not Service Connector name — confirmed by the user checking the dropdown after the connector-name version still showed "Service Type: Select" / empty Input Fields despite both connectors being published. All `<service>` steps across every process file reference the **Connection**:
 
-Note the CPD connector's GUID (the `types1:GUID` at the top of the file) stayed identical across the rename — renaming an Explore object in place preserves its GUID, while recreating it from scratch assigns a new one. The `<service>` step's `<serviceGUID>` must match whichever the case is for a given connector.
+| | Service Connector (defines actions) | Connection (what `<service>` steps reference) | Connection GUID (`<serviceGUID>`) |
+|---|---|---|---|
+| CPD | `SvcConn_Get_Post_Cpd` (GUID `aDMzhpLojjoke0pnhn1H4E`, unchanged from the original `cnctr_cpd_get` — renamed in place) | `Conn-get-post-cpd` | `0zkkeyRXHvpjfEh4Tgq5sM` |
+| Dayforce | `SvcConn_get_post_dayforce` (GUID `kvKgEPCM9y7i86SJRF8qEK`, new — recreated rather than renamed from `cnctr-test-dayforce`) | `Conn-get-post-dayforce` | `jEzhmqLAzmBhdgzZWel1I2` |
+
+So every `<serviceName>` is `Conn-get-post-cpd:ActionName` or `Conn-get-post-dayforce:ActionName` (not the `SvcConn_*` connector name), and every matching `<serviceGUID>` is the **Connection's** own GUID, not the connector's. The action names themselves (`SearchPersonByExtId`, `CreatePerson`, etc.) are unchanged — they're still defined on the Service Connector, just addressed indirectly through the Connection.
 
 ## Revision history on the process XML schema
 
