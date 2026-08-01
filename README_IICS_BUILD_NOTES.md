@@ -79,8 +79,9 @@ Fixed by remapping every `<subflowGUID>` in `ProcessOneEmployee_Process` and `Pr
 - **High confidence** (directly confirmed across 3+ independent real exports): `<input>`/`<output>`/`<tempFields>`, `<assignment>`/`<operation>`/XQuery `<expression>`, `<service>`/`serviceName`/`serviceGUID`/`serviceInput`, `<subflow>` (standalone, `runForEach="false"`), `<container type="exclusive">` decision branching, the `<eventContainer>`/`<events><catch>` fault pattern (for a single watched activity).
 - **Lower confidence, flagged inline in the affected files**:
   - `runForEach="true"` — no real example with it set to `true` was found in any public export searched; only the field's existence and default-`false` value are confirmed. `ProcessOneEmployee_Process`'s three phone-loop `<subflow>` calls and the Orchestrator's `sf-processemployees` call use it, with each per-item field bound directly to the list field (e.g. `temp.tmp_PhonesToAdd/phoneTypeCode`) — check Process Designer's own loop-configuration UI after import and correct the binding if it differs.
-  - The `<eventContainer>` fault pattern was confirmed for a container watching **one** activity (a single `<subflow>` or `<service>`); `ProcessOneEmployee_Process` wraps a **whole multi-step sequence** in its `normalFlow` branch instead. The container/catch/containerLink mechanics should be the same, but this specific shape (multi-step watched flow) wasn't seen in an example — re-verify in Process Designer.
   - Exact response shapes: no sample was available for the Dayforce delta/bulk employee list, the expanded `WorkContracts`/`Contacts` sub-trees, or the CPD phone-number list — all XQuery paths touching those are best-effort against the one flat single-employee sample and one no-phones person-search sample actually provided.
+
+**`<eventContainer>` wrapping a multi-step flow: confirmed wrong, removed.** The one thing flagged above as "confirmed only for a single watched activity, not tested for a whole multi-step sequence" turned out to be exactly that: `ProcessOneEmployee_Process` imported with its `<eventContainer>` step rendering as a blank, un-typed "name:" placeholder — the same symptom the very first schema pass produced everywhere, before the whole invoke/decision/forEach rewrite. Rather than guess a third fault-handling shape, the `<eventContainer>`/`<events><catch>` wrapper was removed entirely; `ProcessOneEmployee_Process` is now a plain sequential flow (same pattern as every other file that already imports cleanly), and it imported successfully once that was done. **Fault handling (build guide 4.13) is an open item again** — add it back through Process Designer's own UI (most versions expose a per-step or wrap-in-scope "Add Exception/Fault Handler" action) rather than hand-authored XML. `ErrorAlert_Process` (which formats the alert text) is unaffected and still importable/callable on its own; it's just not wired into anything's error path right now.
 
 Before treating any of these processes as build-ready:
 1. Open each `.PROCESS.xml` in IICS Process Designer (or re-import the zip into an Explore dev project) and confirm it now validates without the blank/un-typed step problem from the first pass.
@@ -101,6 +102,7 @@ Before treating any of these processes as build-ready:
 | 8 | Error-alert recipients and format are unconfirmed, **and no Email/notification connector exists yet in this project** to reference | `ErrorAlert_Process` only formats the alert text (`out_Subject`/`out_Body`); it does not send anything yet — add a `<service>` step once an Email connector exists |
 | 9 | `LastRunTimestamp` persistence across scheduled runs (the Orchestrator takes it as an input/emits `out_CurrentRunTimestamp` as an output, but the actual storage — a cache table, a file, a custom parameter — isn't wired up) | `Prcs_Dayforce_CPD`, `GetChangedEmployees_Process` |
 | 10 | The Schedule object (build guide 4.16) is an IICS Administrator config, not part of this Explore export — must be created separately once the process is deployed | N/A |
+| 11 | Fault handling (build guide 4.13) is not wired up — the `<eventContainer>` wrap around `ProcessOneEmployee_Process`'s body failed to import (unrecognized element), so it was removed. `ErrorAlert_Process` still exists and formats an alert, but nothing calls it yet | `ProcessOneEmployee_Process` — add via Process Designer's own Exception/Fault Handler UI once the process is otherwise validated |
 
 ## Process inventory
 
@@ -108,7 +110,7 @@ Before treating any of these processes as build-ready:
 |---|---|
 | `Prcs_Dayforce_CPD` | Orchestrator: get changed employees, get a run-scoped Dayforce token, loop `ProcessOneEmployee_Process` over each XRefCode |
 | `GetChangedEmployees_Process` | Dayforce delta query (build guide 4.4) |
-| `ProcessOneEmployee_Process` | **New in this pass.** Per-employee body: detail + search + create-or-update decision + phone reconciliation, fault-wrapped. Looped by the Orchestrator via `runForEach` |
+| `ProcessOneEmployee_Process` | Per-employee body: detail + search + create-or-update decision + phone reconciliation. Looped by the Orchestrator via `runForEach`. Fault handling not yet wired (see Open Item 11) |
 | `GetEmployeeDetail_Process` | Dayforce employee detail, expanded (build guide 4.5) |
 | `SearchPerson_Process` | CPD search by Ext Id/VINCI ID (build guide 4.6) |
 | `CreatePersonAndContract_Process` | New-hire path (build guide 4.8) |
