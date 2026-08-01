@@ -54,9 +54,7 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -86,9 +84,7 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -118,9 +114,7 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole search response body as untyped XML (list of matching persons, each with personVinciId, contracts[], externalIdentifiers, etc. per sample GetPersons.xml)" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -218,9 +212,7 @@
 }</body>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -267,9 +259,7 @@
 }</body>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -308,9 +298,7 @@
 }</body>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -348,9 +336,7 @@
 }</body>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -381,9 +367,7 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output>
-                     <field description="Whole response body as untyped XML" entireResponse="true" name="RawResponse" type="xml"/>
-                  </output>
+                  <output/>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
             </actions>
