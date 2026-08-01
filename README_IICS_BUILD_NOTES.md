@@ -32,6 +32,34 @@ Once published, the user created the Connections (`Conn-get-post-cpd`, `Conn-get
 
 So every `<serviceName>` is `Conn-get-post-cpd:ActionName` or `Conn-get-post-dayforce:ActionName` (not the `SvcConn_*` connector name), and every matching `<serviceGUID>` is the **Connection's** own GUID, not the connector's. The action names themselves (`SearchPersonByExtId`, `CreatePerson`, etc.) are unchanged — they're still defined on the Service Connector, just addressed indirectly through the Connection.
 
+## Process cross-references: IICS reassigns GUIDs on import
+
+After the Connection fix above, 9 of the 11 processes imported cleanly. The remaining two (`ProcessOneEmployee_Process`, `Prcs_Dayforce_CPD`) failed with a generic "Internal application provider error" — and those two are exactly the only files that call *other processes in this same package* via `<subflow>` (everything else only calls the two Connections, which already existed).
+
+Confirmed by re-exporting the 9 successfully-imported processes from the org and diffing: **IICS assigns each newly-imported process a brand new `GUID`/`types1:GUID`, ignoring whatever GUID was declared in the imported XML.** e.g. `UpdatePhoneNumber_Process` was authored with GUID `2MQBdKskt65bUvaVMnxm9g`; after import IICS assigned it `0ncoBf8fJhphLIRIv0RXOS`. Every `<subflowGUID>` reference pointing at the *authored* GUID of a sibling process therefore breaks the moment that sibling is actually imported, since its real GUID is different.
+
+The diff also confirmed this is **the only thing that needed fixing** — content, steps, links, and logic were preserved byte-for-byte (modulo formatting/whitespace and bookkeeping fields like `ParentFlowIds`/timestamps), which is good independent confirmation that the schema itself (service calls, assignments, containers, event handling) was already correct.
+
+Fixed by remapping every `<subflowGUID>` in `ProcessOneEmployee_Process` and `Prcs_Dayforce_CPD` to the real post-import GUIDs of the 9 already-imported processes:
+
+| Process | Authored GUID | Real (post-import) GUID |
+|---|---|---|
+| GetChangedEmployees_Process | `3oBo3euvAbRVfbijBuFPeO` | `82BXsUMh6wDfTfmUadXuw1` |
+| GetEmployeeDetail_Process | `KPffEx7EOwfjp7pn7kzZ2M` | `aDhurm6YPSRfpX6jx48p6H` |
+| SearchPerson_Process | `DB1JRZkPV3HvqKV1vfjqgb` | `7n7iMGoFQB6dEzRA4TyXyr` |
+| CreatePersonAndContract_Process | `ugYTHbESlUs3xY4PcfoFaW` | `7fxMqJIQj2eigrAD3AjsqS` |
+| UpdatePersonAndContract_Process | `TUaU8PTn1SEcDVyUTRKb6U` | `cPu3ROm1I27g3XxioV28Yq` |
+| WriteVinciId_Process | `zBI0ZwpxPB1sKMv6wHgpd1` | `a7jAK3mkjWNb0FDymjNpiw` |
+| AddPhoneNumber_Process | `AwxVtpAsbduNEHRbWUeFYb` | `9WIET5Qv4lVl2j23ISZyoe` |
+| UpdatePhoneNumber_Process | `2MQBdKskt65bUvaVMnxm9g` | `0ncoBf8fJhphLIRIv0RXOS` |
+| DeletePhoneNumber_Process | `MrEEevrr6RSALfwqq4ZHmt` | `jlM9u0QPKK9ltcTL4PIAGA` |
+| ErrorAlert_Process | `xpZXrmJaYOBu7TJpkrH1WV` | `1qQ4Y1EizO2lEjgLImYXaP` |
+
+**Remaining chicken-and-egg step**: `ProcessOneEmployee_Process` itself has never successfully imported yet, so its real post-import GUID is unknown. `Prcs_Dayforce_CPD`'s `<subflow>` call to `ProcessOneEmployee_Process` still uses the *authored* placeholder GUID (`VYIrQ7qaaXeojtBdb9dXHt`) and will very likely still fail on the next import for the same reason as above. Expected sequence:
+1. Re-import this package. `ProcessOneEmployee_Process` should now succeed (all 9 of *its* references are corrected). `Prcs_Dayforce_CPD` will likely still fail.
+2. Export the now-successfully-imported `ProcessOneEmployee_Process` and get its real GUID.
+3. One more fix to `Prcs_Dayforce_CPD`'s single `<subflow>` reference, then it should import cleanly too.
+
 ## Revision history on the process XML schema
 
 **First pass** (superseded): hand-authored using BPEL/ActiveVOS terminology (`<invoke>`, `<invokeProcess>`, `<decision>`, `<forEach>`, `<scope>`/`<faultHandlers>`) inferred from general knowledge, because the only real example available at the time was the trivial `Start -> End` stub. **This failed to import correctly** — Process Designer showed every step as a blank, un-typed placeholder stuck in "Validation in progress" (screenshotted by the user after import).
