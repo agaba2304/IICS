@@ -19,15 +19,6 @@
       <types1:PublicationDate>2026-07-09T18:44:17Z</types1:PublicationDate>
       <types1:PublishedContributionId>project:/rt.connector/cnctr_test_dayforce/cnctr_test_dayforce_svcDef.xml</types1:PublishedContributionId>
       <types1:Entry>
-         <!--
-           NOTE (build guide section 4.2/4.3): production build should replace this connector's
-           inline OAuth call + per-action Bearer headers with a REST V2 Connection configured for
-           OAuth2 Password Grant against the "Get token" endpoint below, so the Secure Agent manages
-           token refresh. Actions are kept explicit here (matching the existing dummy connector's
-           pattern of one action per call) so the process-level wiring stays visible in this file.
-           All secrets previously hardcoded in this file (Dayforce password, long-lived Bearer JWTs)
-           have been removed and replaced with {curly-brace} bind parameters - see Open Items below.
-         -->
          <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
                             agentOnly="false"
                             debug="false"

@@ -16,15 +16,6 @@
       <types1:ModificationDate>2026-07-27T17:44:00Z</types1:ModificationDate>
       <types1:PublicationStatus>unpublished</types1:PublicationStatus>
       <types1:Entry>
-         <!--
-           NOTE: CPD hostname is a placeholder ({cpd-host}) pending client confirmation of the live
-           CPD environment host (build guide section 3.2 / 4.1). The pre-existing "Get Persons" and
-           "Get purchase orders" actions are left pointed at the real api-tst.vinci-construction.net
-           test host since that endpoint was already validated; only their hardcoded Bearer tokens
-           have been parameterized to {cpd_token}, removing the live secret that was committed here.
-           All new actions below implement build guide section 3.2 and use {cpd_token} for auth,
-           to be sourced from the CPD REST V2 Connection once its auth mechanism is confirmed.
-         -->
          <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
                             agentOnly="false"
                             debug="false"
