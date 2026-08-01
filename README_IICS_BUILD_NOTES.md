@@ -6,11 +6,29 @@ This repo tracks the IICS Explore export for the **CPD-Dayforce Integration** pr
 
 ## How this was built
 
-The original repo only contained `Prcs_Dayforce_CPD` as an empty `Start -> End` process plus two connectors (`cnctr_cpd_get`, `cnctr-test-dayforce`) captured from live test calls, including several hardcoded secrets (a Dayforce password and long-lived Bearer JWTs, and a CPD Bearer token). This pass:
+The original repo only contained `Prcs_Dayforce_CPD` as an empty `Start -> End` process plus two connectors (originally named `cnctr_cpd_get`, `cnctr-test-dayforce` — since renamed/republished in IICS as `SvcConn_Get_Post_Cpd` and `SvcConn_get_post_dayforce`, see "Connectors and Connections" below) captured from live test calls, including several hardcoded secrets (a Dayforce password and long-lived Bearer JWTs, and a CPD Bearer token). This pass:
 
 - Removed every hardcoded secret and replaced it with a `{curly-brace}` bind parameter (`access_token`, `cpd_token`, `df_username`, `df_password`) — **the exposed credentials were live at the time this repo was read and should be rotated regardless of this change.**
-- Extended both connectors with every REST action listed in the design doc's API reference (section 3), plus an `entireResponse="true" type="xml"` output field on each action so the response body is available for XQuery navigation downstream.
+- Extended both connectors with every REST action listed in the design doc's API reference (section 3).
 - Built the orchestrator (`Prcs_Dayforce_CPD`) and 11 sub-processes implementing the design doc's build guide (section 4).
+
+## Connectors and Connections
+
+IICS's real object model, confirmed by actually publishing these in the org: **Service Connector** (the `AI_SERVICE_CONNECTOR` file — defines actions/operations) → **Connection** (`AI_CONNECTION` — wraps a Service Connector with an agent/auth binding) → **Process Service step** (references the Service Connector's action; the Connection is what makes that action executable by a Secure Agent). A raw Service Connector cannot be selected as a Service step's target until it is (a) schema-valid and (b) has at least one Connection built on top of it.
+
+Getting the two Service Connectors to actually **publish** took three fix rounds, all confirmed by testing directly against this org (not guessed):
+1. **Stray XML comments** (`<!-- -->` as the first child of `<types1:Entry>`) — removed. Every real IICS export checked had zero comments anywhere in the object body.
+2. ~~`entireResponse="true"` output fields~~ — briefly suspected and reverted, then **confirmed valid** after finding a real published connector using it successfully. Not reintroduced in this pass (output fields were left empty/minimal on the working connectors as republished), but it's safe to add back if response-body access is needed later.
+3. **`<input><field .../></input>` instead of `<input><parameter .../></input>`** — this was the actual bug. `<field>` is only correct inside `<output>`; `<input>` uses `<parameter name=".." type=".." required=".."/>`. Confirmed both by a real published reference connector and by the user successfully publishing both connectors after this fix.
+
+Once published, the user created the Connections (`Conn-get-post-cpd`, `Conn-get-post-dayforce`, both `AI_CONNECTION` objects, both published, both bound to agent `hubdevinfoadm02`) and renamed/republished the Service Connectors as `SvcConn_Get_Post_Cpd` and `SvcConn_get_post_dayforce`. All `<service>` steps across every process file were updated to the new names and GUIDs:
+
+| | Old name (superseded) | Current name | Connector GUID | Connection |
+|---|---|---|---|---|
+| CPD | `cnctr_cpd_get` | `SvcConn_Get_Post_Cpd` | `aDMzhpLojjoke0pnhn1H4E` (unchanged — same object, renamed in place) | `Conn-get-post-cpd` |
+| Dayforce | `cnctr-test-dayforce` | `SvcConn_get_post_dayforce` | `kvKgEPCM9y7i86SJRF8qEK` (new — recreated, not renamed) | `Conn-get-post-dayforce` |
+
+Note the CPD connector's GUID (the `types1:GUID` at the top of the file) stayed identical across the rename — renaming an Explore object in place preserves its GUID, while recreating it from scratch assigns a new one. The `<service>` step's `<serviceGUID>` must match whichever the case is for a given connector.
 
 ## Revision history on the process XML schema
 
@@ -46,13 +64,13 @@ Before treating any of these processes as build-ready:
 
 | # | Item | Where it shows up |
 |---|------|-------------------|
-| 1 | CPD hostname is a placeholder (`{cpd-host}`) | `cnctr_cpd_get` — every new CPD action |
-| 2 | Dayforce EmployeeProperties XRefCode for the VINCI ID field is unconfirmed | `cnctr-test-dayforce` `WriteVinciIdToDayforce` action, `WriteVinciId_Process` |
+| 1 | CPD hostname is a placeholder (`{cpd-host}`) | `SvcConn_Get_Post_Cpd` — every new CPD action |
+| 2 | Dayforce EmployeeProperties XRefCode for the VINCI ID field is unconfirmed | `SvcConn_get_post_dayforce` `WriteVinciIdToDayforce` action, `WriteVinciId_Process` |
 | 3 | Dayforce org (LedgerCode) → CPD `ouId` cross-reference table doesn't exist yet | `CreatePersonAndContract_Process` / `UpdatePersonAndContract_Process` (`tmp_resolved_COR_ouId`) |
 | 4 | Dayforce contact/phone type → CPD `phoneTypeCode` mapping is unconfirmed, and no sample of the expanded `Contacts.Items` shape was available | `ProcessOneEmployee_Process` `dp-comparephones` step |
-| 5 | CPD authentication mechanism is unconfirmed (no CPD equivalent of Dayforce's "Get token" action exists yet) | `cnctr_cpd_get` — `in_CpdToken` is a process input (secure parameter) until this is resolved |
+| 5 | CPD authentication mechanism is unconfirmed (no CPD equivalent of Dayforce's "Get token" action exists yet) | `SvcConn_Get_Post_Cpd` — `in_CpdToken` is a process input (secure parameter) until this is resolved |
 | 6 | Create-path `contractId` source is unconfirmed — the design doc's Create/Update Contract call is a single PATCH to an existing `{contractId}`, which presupposes CPD already issued one on Create Person | `CreatePersonAndContract_Process` |
-| 7 | Search Person match criteria — this build uses **Ext Id / VINCI ID** per project decision (not name+DOB). Known limitation carried from the design doc: this can't by itself distinguish a genuine new hire from a prior-run assignment that hasn't propagated yet | `SearchPerson_Process`, `cnctr_cpd_get` `SearchPersonByExtId` action |
+| 7 | Search Person match criteria — this build uses **Ext Id / VINCI ID** per project decision (not name+DOB). Known limitation carried from the design doc: this can't by itself distinguish a genuine new hire from a prior-run assignment that hasn't propagated yet | `SearchPerson_Process`, `SvcConn_Get_Post_Cpd` `SearchPersonByExtId` action |
 | 8 | Error-alert recipients and format are unconfirmed, **and no Email/notification connector exists yet in this project** to reference | `ErrorAlert_Process` only formats the alert text (`out_Subject`/`out_Body`); it does not send anything yet — add a `<service>` step once an Email connector exists |
 | 9 | `LastRunTimestamp` persistence across scheduled runs (the Orchestrator takes it as an input/emits `out_CurrentRunTimestamp` as an output, but the actual storage — a cache table, a file, a custom parameter — isn't wired up) | `Prcs_Dayforce_CPD`, `GetChangedEmployees_Process` |
 | 10 | The Schedule object (build guide 4.16) is an IICS Administrator config, not part of this Explore export — must be created separately once the process is deployed | N/A |

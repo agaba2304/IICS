@@ -1,0 +1,44 @@
+<aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
+                   xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
+   <types1:Item>
+      <types1:EntryId>nYmWR7hsAVR3aaa-gt-17355173-2026-08-01T20:49:13.219Z::conn.xml</types1:EntryId>
+      <types1:Name>Conn-get-post-cpd</types1:Name>
+      <types1:MimeType>application/xml+connection</types1:MimeType>
+      <types1:Description/>
+      <types1:AppliesTo/>
+      <types1:Tags>.agent:hubdevinfoadm02</types1:Tags>
+      <types1:VersionLabel>1.0</types1:VersionLabel>
+      <types1:State>CURRENT</types1:State>
+      <types1:ProcessGroup/>
+      <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
+      <types1:CreationDate>2026-08-01T20:49:13Z</types1:CreationDate>
+      <types1:ModifiedBy/>
+      <types1:PublicationStatus>published</types1:PublicationStatus>
+      <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
+      <types1:PublicationDate>2026-08-01T20:49:32Z</types1:PublicationDate>
+      <types1:PublishedContributionId>project:/rt.connection/Conn-get-post-cpd/Conn-get-post-cpd.conn.xml</types1:PublishedContributionId>
+      <types1:Entry>
+         <connection xmlns="http://schemas.informatica.com/socrates/data-services/2014/04/avosConnections.xsd"
+                     GUID="0zkkeyRXHvpjfEh4Tgq5sM"
+                     displayName="Conn-get-post-cpd"
+                     label="Conn-get-post-cpd"
+                     name="Conn-get-post-cpd">
+            <description/>
+            <tags>.agent:hubdevinfoadm02</tags>
+            <agent>hubdevinfoadm02</agent>
+            <businessConnector xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"
+                               agentOnly="false"
+                               connectorPath="project:/rt.connector/SvcConn_Get_Post_Cpd/SvcConn_Get_Post_Cpd_svcDef.xml"
+                               guid="aDMzhpLojjoke0pnhn1H4E"
+                               name="SvcConn_Get_Post_Cpd"
+                               supportsConnectionTest="false"
+                               uuid="08cf3af9-56cf-4433-9a42-f9c43b895333">
+               <description/>
+            </businessConnector>
+         </connection>
+      </types1:Entry>
+      <types1:GUID>0zkkeyRXHvpjfEh4Tgq5sM</types1:GUID>
+      <types1:DisplayName>Conn-get-post-cpd</types1:DisplayName>
+   </types1:Item>
+   <types1:CurrentServerDateTime>2026-08-01T20:50:06.403Z</types1:CurrentServerDateTime>
+</aetgt:getResponse>

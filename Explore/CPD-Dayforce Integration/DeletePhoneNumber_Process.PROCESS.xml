@@ -59,7 +59,7 @@
                </start>
                <service id="svc-deletephone">
                   <title>Delete CPD phone number</title>
-                  <serviceName>cnctr_cpd_get:DeletePhoneNumber</serviceName>
+                  <serviceName>SvcConn_Get_Post_Cpd:DeletePhoneNumber</serviceName>
                   <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>

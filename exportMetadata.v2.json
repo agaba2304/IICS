@@ -4,8 +4,8 @@
   "sourceOrgName": "VINCI Construction USA - DEV",
   "exportedObjects": [
     {
-      "objectGuid": "4eE2MYnrQWFgBzm3wuvKQW",
-      "objectName": "cnctr-test-dayforce",
+      "objectGuid": "kvKgEPCM9y7i86SJRF8qEK",
+      "objectName": "SvcConn_get_post_dayforce",
       "objectType": "AI_SERVICE_CONNECTOR",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -15,7 +15,7 @@
           "minor": 0
         },
         "repoInfo": {
-          "repoHandle": "fWdvSzYLnzYLnzY-gt-11633211-2026-06-11T15:45:14.088Z::svc.xml"
+          "repoHandle": "VbeOm6S6fPAreFR-gt-17323402-2026-08-01T20:33:31.768Z::svc.xml"
         },
         "objectRefs": [],
         "contextAttributes": null,
@@ -51,7 +51,7 @@
     },
     {
       "objectGuid": "aDMzhpLojjoke0pnhn1H4E",
-      "objectName": "cnctr_cpd_get",
+      "objectName": "SvcConn_Get_Post_Cpd",
       "objectType": "AI_SERVICE_CONNECTOR",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -336,6 +336,52 @@
         },
         "repoInfo": {
           "repoHandle": "VYIrQ7qaaXeojtBdb9dXHt-gt-00000011-2026-07-27T17:44:00.000Z::pd.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "jEzhmqLAzmBhdgzZWel1I2",
+      "objectName": "Conn-get-post-dayforce",
+      "objectType": "AI_CONNECTION",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "k8jKBmeK3jhBjop-gt-17305514-2026-08-01T20:25:50.172Z::conn.xml"
+        },
+        "objectRefs": [],
+        "contextAttributes": null,
+        "additionalInfo": {
+          "description": "",
+          "contentType": "application/json; charset=utf-8",
+          "documentState": "VALID"
+        }
+      }
+    },
+    {
+      "objectGuid": "0zkkeyRXHvpjfEh4Tgq5sM",
+      "objectName": "Conn-get-post-cpd",
+      "objectType": "AI_CONNECTION",
+      "path": "/Explore/CPD-Dayforce Integration",
+      "providerName": null,
+      "metadata": {
+        "modelVersion": {
+          "major": 1,
+          "minor": 0
+        },
+        "repoInfo": {
+          "repoHandle": "nYmWR7hsAVR3aaa-gt-17355173-2026-08-01T20:49:13.219Z::conn.xml"
         },
         "objectRefs": [],
         "contextAttributes": null,

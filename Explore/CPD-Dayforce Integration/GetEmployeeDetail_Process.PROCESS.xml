@@ -111,8 +111,8 @@
                </start>
                <service id="svc-detail">
                   <title>Get employee detail (expanded)</title>
-                  <serviceName>cnctr-test-dayforce:GetEmployeeDetail</serviceName>
-                  <serviceGUID>4eE2MYnrQWFgBzm3wuvKQW</serviceGUID>
+                  <serviceName>SvcConn_get_post_dayforce:GetEmployeeDetail</serviceName>
+                  <serviceGUID>kvKgEPCM9y7i86SJRF8qEK</serviceGUID>
                   <serviceInput>
                      <parameter name="xrefCode" source="field" updatable="true">input.in_XRefCode</parameter>
                      <parameter name="access_token" source="field" updatable="true">input.in_access_token</parameter>

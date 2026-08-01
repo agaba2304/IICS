@@ -69,7 +69,7 @@
                </start>
                <service id="svc-addphone">
                   <title>Add CPD phone number</title>
-                  <serviceName>cnctr_cpd_get:AddPhoneNumber</serviceName>
+                  <serviceName>SvcConn_Get_Post_Cpd:AddPhoneNumber</serviceName>
                   <serviceGUID>aDMzhpLojjoke0pnhn1H4E</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
