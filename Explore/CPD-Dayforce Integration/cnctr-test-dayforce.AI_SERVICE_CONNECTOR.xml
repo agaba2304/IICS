@@ -40,8 +40,8 @@
                        responseEncoding="">
                   <description>3.1.1 Get OAuth Token. Authenticates against Dayforce's identity server. In production this should be handled by the Connection's OAuth2 config rather than invoked as an explicit process step.</description>
                   <input>
-                     <field description="Dayforce API username (from Secure Agent connection / secure parameter, never hardcoded)" name="df_username" type="string"/>
-                     <field description="Dayforce API password (from Secure Agent connection / secure parameter, never hardcoded)" name="df_password" type="string"/>
+                     <parameter description="Dayforce API username (from Secure Agent connection / secure parameter, never hardcoded)" name="df_username" type="string" required="false"/>
+                     <parameter description="Dayforce API password (from Secure Agent connection / secure parameter, never hardcoded)" name="df_password" type="string" required="false"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -76,9 +76,9 @@
                        responseEncoding="UTF-8">
                   <description>3.1.2 Get Changed Employees (Delta). Returns the XRefCodes of employees modified within [filterUpdatedStartDate, filterUpdatedEndDate). Confirmed working against the live test tenant. Consumed by GetChangedEmployees_Process (build guide 4.4).</description>
                   <input>
-                     <field description="Start of the delta window, e.g. the orchestrator's last successful run timestamp" name="filterUpdatedStartDate" type="string"/>
-                     <field description="End of the delta window, e.g. now" name="filterUpdatedEndDate" type="string"/>
-                     <field description="Bearer token from the Get token action" name="access_token" type="string"/>
+                     <parameter description="Start of the delta window, e.g. the orchestrator's last successful run timestamp" name="filterUpdatedStartDate" type="string" required="false"/>
+                     <parameter description="End of the delta window, e.g. now" name="filterUpdatedEndDate" type="string" required="false"/>
+                     <parameter description="Bearer token from the Get token action" name="access_token" type="string" required="false"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -107,7 +107,7 @@
                        responseEncoding="UTF-8">
                   <description>Full (non-delta) employee list. Retained from the original dummy connector for ad hoc/manual use; the scheduled orchestrator uses GetChangedEmployees instead.</description>
                   <input>
-                     <field description="Bearer token from the Get token action" name="access_token" type="string"/>
+                     <parameter description="Bearer token from the Get token action" name="access_token" type="string" required="false"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -136,8 +136,8 @@
                        responseEncoding="">
                   <description>3.1.3 Get Employee Detail. Returns full employee data including contract, phone, and job/org assignment via the expand parameter. Confirmed working on the single-employee endpoint only (not the bulk list). Consumed by GetEmployeeDetail_Process (build guide 4.5).</description>
                   <input>
-                     <field description="Dayforce XRefCode (employee id) to fetch" name="xrefCode" type="string"/>
-                     <field description="Bearer token from the Get token action" name="access_token" type="string"/>
+                     <parameter description="Dayforce XRefCode (employee id) to fetch" name="xrefCode" type="string" required="false"/>
+                     <parameter description="Bearer token from the Get token action" name="access_token" type="string" required="false"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
@@ -166,9 +166,9 @@
                        responseEncoding="">
                   <description>3.1.4 Write VINCI ID Back to Dayforce. Writes the CPD-generated VINCI ID into Dayforce's EmployeeProperties object. Create path only (build guide 4.10). Property XRefCode below is pending client confirmation - see Open Items.</description>
                   <input>
-                     <field description="Dayforce XRefCode (employee id) to update" name="xrefCode" type="string"/>
-                     <field description="VINCI ID returned by CPD Create Person" name="personVinciId" type="string"/>
-                     <field description="Bearer token from the Get token action" name="access_token" type="string"/>
+                     <parameter description="Dayforce XRefCode (employee id) to update" name="xrefCode" type="string" required="false"/>
+                     <parameter description="VINCI ID returned by CPD Create Person" name="personVinciId" type="string" required="false"/>
+                     <parameter description="Bearer token from the Get token action" name="access_token" type="string" required="false"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
