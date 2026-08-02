@@ -111,7 +111,7 @@
                </start>
                <service id="svc-detail">
                   <title>Get employee detail (expanded)</title>
-                  <serviceName>Conn-get-post-dayforce:GetEmployeeDetail</serviceName>
+                  <serviceName>ac-sc-api-dayforce:GetEmployeeDetail</serviceName>
                   <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
                   <serviceInput>
                      <parameter name="xrefCode" source="field" updatable="true">input.in_XRefCode</parameter>

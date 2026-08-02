@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>k8jKBmeK3jhBjop-gt-17305514-2026-08-01T20:25:50.172Z::conn.xml</types1:EntryId>
-      <types1:Name>Conn-get-post-dayforce</types1:Name>
+      <types1:Name>ac-sc-api-dayforce</types1:Name>
       <types1:MimeType>application/xml+connection</types1:MimeType>
       <types1:Description/>
       <types1:AppliesTo/>
@@ -17,21 +17,21 @@
       <types1:PublicationStatus>published</types1:PublicationStatus>
       <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
       <types1:PublicationDate>2026-08-01T20:47:17Z</types1:PublicationDate>
-      <types1:PublishedContributionId>project:/rt.connection/Conn-get-post-dayforce/Conn-get-post-dayforce.conn.xml</types1:PublishedContributionId>
+      <types1:PublishedContributionId>project:/rt.connection/ac-sc-api-dayforce/ac-sc-api-dayforce.conn.xml</types1:PublishedContributionId>
       <types1:Entry>
          <connection xmlns="http://schemas.informatica.com/socrates/data-services/2014/04/avosConnections.xsd"
                      GUID="null"
-                     displayName="Conn-get-post-dayforce"
-                     label="Conn-get-post-dayforce"
-                     name="Conn-get-post-dayforce">
+                     displayName="ac-sc-api-dayforce"
+                     label="ac-sc-api-dayforce"
+                     name="ac-sc-api-dayforce">
             <description/>
             <tags>.agent:hubdevinfoadm02</tags>
             <agent>hubdevinfoadm02</agent>
             <businessConnector xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"
                                agentOnly="false"
-                               connectorPath="project:/rt.connector/SvcConn_get_post_dayforce/SvcConn_get_post_dayforce_svcDef.xml"
+                               connectorPath="project:/rt.connector/sc-api-dayforce/sc-api-dayforce_svcDef.xml"
                                guid="kvKgEPCM9y7i86SJRF8qEK"
-                               name="SvcConn_get_post_dayforce"
+                               name="sc-api-dayforce"
                                supportsConnectionTest="false"
                                uuid="590b51ca-5d5b-411a-a762-69b2cbfda28c">
                <description/>
@@ -39,7 +39,7 @@
          </connection>
       </types1:Entry>
       <types1:GUID>jEzhmqLAzmBhdgzZWel1I2</types1:GUID>
-      <types1:DisplayName>Conn-get-post-dayforce</types1:DisplayName>
+      <types1:DisplayName>ac-sc-api-dayforce</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-08-01T20:50:06.417Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

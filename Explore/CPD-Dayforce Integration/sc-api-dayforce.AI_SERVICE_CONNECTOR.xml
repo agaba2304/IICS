@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>VbeOm6S6fPAreFR-gt-17323402-2026-08-01T20:33:31.768Z::svc.xml</types1:EntryId>
-      <types1:Name>SvcConn_get_post_dayforce</types1:Name>
+      <types1:Name>sc-api-dayforce</types1:Name>
       <types1:ParentFlowIds>k8jKBmeK3jhBjop-gt-17305514-2026-08-01T20:25:50.172Z::conn.xml</types1:ParentFlowIds>
       <types1:MimeType>application/xml+businesssconnector</types1:MimeType>
       <types1:Description/>
@@ -18,14 +18,14 @@
       <types1:PublicationStatus>published</types1:PublicationStatus>
       <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
       <types1:PublicationDate>2026-08-01T20:45:24Z</types1:PublicationDate>
-      <types1:PublishedContributionId>project:/rt.connector/SvcConn_get_post_dayforce/SvcConn_get_post_dayforce_svcDef.xml</types1:PublishedContributionId>
+      <types1:PublishedContributionId>project:/rt.connector/sc-api-dayforce/sc-api-dayforce_svcDef.xml</types1:PublishedContributionId>
       <types1:Entry>
          <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
                             agentOnly="false"
                             debug="false"
-                            displayName="SvcConn_get_post_dayforce"
+                            displayName="sc-api-dayforce"
                             label=""
-                            name="SvcConn_get_post_dayforce"
+                            name="sc-api-dayforce"
                             uuid="590b51ca-5d5b-411a-a762-69b2cbfda28c">
             <description/>
             <tags/>
@@ -81,7 +81,7 @@
                        name="GetChangedEmployees"
                        preemptiveAuth="true"
                        responseEncoding="UTF-8">
-                  <description>3.1.2 Get Changed Employees (Delta). Returns the XRefCodes of employees modified within [filterUpdatedStartDate, filterUpdatedEndDate). Confirmed working against the live test tenant. Consumed by GetChangedEmployees_Process (build guide 4.4).</description>
+                  <description>3.1.2 Get Changed Employees (Delta). Returns the XRefCodes of employees modified within [filterUpdatedStartDate, filterUpdatedEndDate). Confirmed working against the live test tenant. Consumed by p_GetChangedEmployees (build guide 4.4).</description>
                   <input>
                      <parameter description="Start of the delta window, e.g. the orchestrator's last successful run timestamp"
                                 name="filterUpdatedStartDate"
@@ -234,7 +234,7 @@
          </businessConnector>
       </types1:Entry>
       <types1:GUID>kvKgEPCM9y7i86SJRF8qEK</types1:GUID>
-      <types1:DisplayName>SvcConn_get_post_dayforce</types1:DisplayName>
+      <types1:DisplayName>sc-api-dayforce</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-08-01T20:50:06.344Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>
