@@ -1,16 +1,31 @@
 # CPD-Dayforce Integration — Build Notes
 
-This repo tracks the IICS Explore export for the **CPD-Dayforce Integration** project (`Prcs_Dayforce_CPD` orchestrator + supporting connectors/sub-processes), built against `Dayforce_CPD_Functional_Design_Build_Guide.docx` v1.0.
+This repo tracks the IICS Explore export for the **CPD-Dayforce Integration** project (`p_dayforce_cpd_integration` orchestrator + supporting connectors/sub-processes), built against `Dayforce_CPD_Functional_Design_Build_Guide.docx` v1.0.
 
 `IICSExport.zip` at the repo root is the re-importable package (see "Regenerating the zip" below). Everything under `Explore/` is the same content extracted to individual files so changes are reviewable in git diffs/PRs — **edit the extracted files, not the zip directly.**
 
+## Naming history
+
+Names have changed twice as this was built out; current names are what matters, but in case old names show up in a stale export or an old conversation, here's the lineage:
+
+| Asset | Original (dummy) name | Interim name (post schema-fix) | **Current name** |
+|---|---|---|---|
+| CPD Service Connector | `cnctr_cpd_get` | `SvcConn_Get_Post_Cpd` | **`sc-api-cpd`** |
+| Dayforce Service Connector | `cnctr-test-dayforce` | `SvcConn_get_post_dayforce` | **`sc-api-dayforce`** |
+| CPD Connection | *(didn't exist)* | `Conn-get-post-cpd` | **`ac-sc-api-cpd`** |
+| Dayforce Connection | *(didn't exist)* | `Conn-get-post-dayforce` | **`ac-sc-api-dayforce`** |
+| Delta-query process | *(didn't exist)* | `GetChangedEmployees_Process` | **`p_GetChangedEmployees`** |
+| Orchestrator | `Prcs_Dayforce_CPD` (empty stub) | *(same name)* | **`p_dayforce_cpd_integration`** |
+
+All other sub-processes (`GetEmployeeDetail_Process`, `SearchPerson_Process`, `CreatePersonAndContract_Process`, `UpdatePersonAndContract_Process`, `WriteVinciId_Process`, `AddPhoneNumber_Process`, `UpdatePhoneNumber_Process`, `DeletePhoneNumber_Process`, `ErrorAlert_Process`, `ProcessOneEmployee_Process`) keep their original names — only the two connectors, two connections, and two processes above were part of the renaming request.
+
 ## How this was built
 
-The original repo only contained `Prcs_Dayforce_CPD` as an empty `Start -> End` process plus two connectors (originally named `cnctr_cpd_get`, `cnctr-test-dayforce` — since renamed/republished in IICS as `SvcConn_Get_Post_Cpd` and `SvcConn_get_post_dayforce`, see "Connectors and Connections" below) captured from live test calls, including several hardcoded secrets (a Dayforce password and long-lived Bearer JWTs, and a CPD Bearer token). This pass:
+The original repo only contained the orchestrator as an empty `Start -> End` process plus two connectors captured from live test calls (under their original dummy names, see table above), including several hardcoded secrets (a Dayforce password and long-lived Bearer JWTs, and a CPD Bearer token). This pass:
 
 - Removed every hardcoded secret and replaced it with a `{curly-brace}` bind parameter (`access_token`, `cpd_token`, `df_username`, `df_password`) — **the exposed credentials were live at the time this repo was read and should be rotated regardless of this change.**
 - Extended both connectors with every REST action listed in the design doc's API reference (section 3).
-- Built the orchestrator (`Prcs_Dayforce_CPD`) and 11 sub-processes implementing the design doc's build guide (section 4).
+- Built the orchestrator (`p_dayforce_cpd_integration`) and 11 sub-processes implementing the design doc's build guide (section 4).
 
 ## Connectors and Connections
 
@@ -21,30 +36,30 @@ Getting the two Service Connectors to actually **publish** took three fix rounds
 2. ~~`entireResponse="true"` output fields~~ — briefly suspected and reverted, then **confirmed valid** after finding a real published connector using it successfully. Not reintroduced in this pass (output fields were left empty/minimal on the working connectors as republished), but it's safe to add back if response-body access is needed later.
 3. **`<input><field .../></input>` instead of `<input><parameter .../></input>`** — this was the actual bug. `<field>` is only correct inside `<output>`; `<input>` uses `<parameter name=".." type=".." required=".."/>`. Confirmed both by a real published reference connector and by the user successfully publishing both connectors after this fix.
 
-Once published, the user created the Connections (`Conn-get-post-cpd`, `Conn-get-post-dayforce`, both `AI_CONNECTION` objects, both published, both bound to agent `hubdevinfoadm02`) and renamed/republished the Service Connectors as `SvcConn_Get_Post_Cpd` and `SvcConn_get_post_dayforce`.
+Once published, the user created the Connections (`ac-sc-api-cpd`, `ac-sc-api-dayforce`, both `AI_CONNECTION` objects, both published, both bound to agent `hubdevinfoadm02`) and renamed/republished the Service Connectors as `sc-api-cpd` and `sc-api-dayforce`.
 
 **Important, confirmed directly in Process Designer**: a `<service>` step's "Service Type" picker resolves by **Connection name**, not Service Connector name — confirmed by the user checking the dropdown after the connector-name version still showed "Service Type: Select" / empty Input Fields despite both connectors being published. All `<service>` steps across every process file reference the **Connection**:
 
 | | Service Connector (defines actions) | Connection (what `<service>` steps reference) | Connection GUID (`<serviceGUID>`) |
 |---|---|---|---|
-| CPD | `SvcConn_Get_Post_Cpd` (GUID `aDMzhpLojjoke0pnhn1H4E`, unchanged from the original `cnctr_cpd_get` — renamed in place) | `Conn-get-post-cpd` | `0zkkeyRXHvpjfEh4Tgq5sM` |
-| Dayforce | `SvcConn_get_post_dayforce` (GUID `kvKgEPCM9y7i86SJRF8qEK`, new — recreated rather than renamed from `cnctr-test-dayforce`) | `Conn-get-post-dayforce` | `jEzhmqLAzmBhdgzZWel1I2` |
+| CPD | `sc-api-cpd` (GUID `aDMzhpLojjoke0pnhn1H4E`, unchanged from the original `cnctr_cpd_get` — renamed in place) | `ac-sc-api-cpd` | `0zkkeyRXHvpjfEh4Tgq5sM` |
+| Dayforce | `sc-api-dayforce` (GUID `kvKgEPCM9y7i86SJRF8qEK`, new — recreated rather than renamed from `cnctr-test-dayforce`) | `ac-sc-api-dayforce` | `jEzhmqLAzmBhdgzZWel1I2` |
 
-So every `<serviceName>` is `Conn-get-post-cpd:ActionName` or `Conn-get-post-dayforce:ActionName` (not the `SvcConn_*` connector name), and every matching `<serviceGUID>` is the **Connection's** own GUID, not the connector's. The action names themselves (`SearchPersonByExtId`, `CreatePerson`, etc.) are unchanged — they're still defined on the Service Connector, just addressed indirectly through the Connection.
+So every `<serviceName>` is `ac-sc-api-cpd:ActionName` or `ac-sc-api-dayforce:ActionName` (not the `SvcConn_*` connector name), and every matching `<serviceGUID>` is the **Connection's** own GUID, not the connector's. The action names themselves (`SearchPersonByExtId`, `CreatePerson`, etc.) are unchanged — they're still defined on the Service Connector, just addressed indirectly through the Connection.
 
 ## Process cross-references: IICS reassigns GUIDs on import
 
-After the Connection fix above, 9 of the 11 processes imported cleanly. The remaining two (`ProcessOneEmployee_Process`, `Prcs_Dayforce_CPD`) failed with a generic "Internal application provider error" — and those two are exactly the only files that call *other processes in this same package* via `<subflow>` (everything else only calls the two Connections, which already existed).
+After the Connection fix above, 9 of the 11 processes imported cleanly. The remaining two (`ProcessOneEmployee_Process`, `p_dayforce_cpd_integration`) failed with a generic "Internal application provider error" — and those two are exactly the only files that call *other processes in this same package* via `<subflow>` (everything else only calls the two Connections, which already existed).
 
 Confirmed by re-exporting the 9 successfully-imported processes from the org and diffing: **IICS assigns each newly-imported process a brand new `GUID`/`types1:GUID`, ignoring whatever GUID was declared in the imported XML.** e.g. `UpdatePhoneNumber_Process` was authored with GUID `2MQBdKskt65bUvaVMnxm9g`; after import IICS assigned it `0ncoBf8fJhphLIRIv0RXOS`. Every `<subflowGUID>` reference pointing at the *authored* GUID of a sibling process therefore breaks the moment that sibling is actually imported, since its real GUID is different.
 
 The diff also confirmed this is **the only thing that needed fixing** — content, steps, links, and logic were preserved byte-for-byte (modulo formatting/whitespace and bookkeeping fields like `ParentFlowIds`/timestamps), which is good independent confirmation that the schema itself (service calls, assignments, containers, event handling) was already correct.
 
-Fixed by remapping every `<subflowGUID>` in `ProcessOneEmployee_Process` and `Prcs_Dayforce_CPD` to the real post-import GUIDs of the 9 already-imported processes:
+Fixed by remapping every `<subflowGUID>` in `ProcessOneEmployee_Process` and `p_dayforce_cpd_integration` to the real post-import GUIDs of the 9 already-imported processes:
 
 | Process | Authored GUID | Real (post-import) GUID |
 |---|---|---|
-| GetChangedEmployees_Process | `3oBo3euvAbRVfbijBuFPeO` | `82BXsUMh6wDfTfmUadXuw1` |
+| p_GetChangedEmployees | `3oBo3euvAbRVfbijBuFPeO` | `82BXsUMh6wDfTfmUadXuw1` |
 | GetEmployeeDetail_Process | `KPffEx7EOwfjp7pn7kzZ2M` | `aDhurm6YPSRfpX6jx48p6H` |
 | SearchPerson_Process | `DB1JRZkPV3HvqKV1vfjqgb` | `7n7iMGoFQB6dEzRA4TyXyr` |
 | CreatePersonAndContract_Process | `ugYTHbESlUs3xY4PcfoFaW` | `7fxMqJIQj2eigrAD3AjsqS` |
@@ -55,7 +70,7 @@ Fixed by remapping every `<subflowGUID>` in `ProcessOneEmployee_Process` and `Pr
 | DeletePhoneNumber_Process | `MrEEevrr6RSALfwqq4ZHmt` | `jlM9u0QPKK9ltcTL4PIAGA` |
 | ErrorAlert_Process | `xpZXrmJaYOBu7TJpkrH1WV` | `1qQ4Y1EizO2lEjgLImYXaP` |
 
-**Resolved**: `ProcessOneEmployee_Process` imported successfully once its 9 references were corrected (real post-import GUID: `2jvNEMZkr0SeKWtoaSMfYh`, vs. the authored `VYIrQ7qaaXeojtBdb9dXHt`). `Prcs_Dayforce_CPD`'s `<subflow>` call to it has been updated to that real GUID. All 11 processes should now import and resolve cleanly.
+**Resolved**: `ProcessOneEmployee_Process` imported successfully once its 9 references were corrected (real post-import GUID: `2jvNEMZkr0SeKWtoaSMfYh`, vs. the authored `VYIrQ7qaaXeojtBdb9dXHt`). `p_dayforce_cpd_integration`'s `<subflow>` call to it has been updated to that real GUID. All 11 processes should now import and resolve cleanly.
 
 ## Revision history on the process XML schema
 
@@ -92,15 +107,15 @@ Before treating any of these processes as build-ready:
 
 | # | Item | Where it shows up |
 |---|------|-------------------|
-| 1 | CPD hostname is a placeholder (`{cpd-host}`) | `SvcConn_Get_Post_Cpd` — every new CPD action |
-| 2 | Dayforce EmployeeProperties XRefCode for the VINCI ID field is unconfirmed | `SvcConn_get_post_dayforce` `WriteVinciIdToDayforce` action, `WriteVinciId_Process` |
+| 1 | CPD hostname is a placeholder (`{cpd-host}`) | `sc-api-cpd` — every new CPD action |
+| 2 | Dayforce EmployeeProperties XRefCode for the VINCI ID field is unconfirmed | `sc-api-dayforce` `WriteVinciIdToDayforce` action, `WriteVinciId_Process` |
 | 3 | Dayforce org (LedgerCode) → CPD `ouId` cross-reference table doesn't exist yet | `CreatePersonAndContract_Process` / `UpdatePersonAndContract_Process` (`tmp_resolved_COR_ouId`) |
 | 4 | Dayforce contact/phone type → CPD `phoneTypeCode` mapping is unconfirmed, and no sample of the expanded `Contacts.Items` shape was available | `ProcessOneEmployee_Process` `dp-comparephones` step |
-| 5 | CPD authentication mechanism is unconfirmed (no CPD equivalent of Dayforce's "Get token" action exists yet) | `SvcConn_Get_Post_Cpd` — `in_CpdToken` is a process input (secure parameter) until this is resolved |
+| 5 | CPD authentication mechanism is unconfirmed (no CPD equivalent of Dayforce's "Get token" action exists yet) | `sc-api-cpd` — `in_CpdToken` is a process input (secure parameter) until this is resolved |
 | 6 | Create-path `contractId` source is unconfirmed — the design doc's Create/Update Contract call is a single PATCH to an existing `{contractId}`, which presupposes CPD already issued one on Create Person | `CreatePersonAndContract_Process` |
-| 7 | Search Person match criteria — this build uses **Ext Id / VINCI ID** per project decision (not name+DOB). Known limitation carried from the design doc: this can't by itself distinguish a genuine new hire from a prior-run assignment that hasn't propagated yet | `SearchPerson_Process`, `SvcConn_Get_Post_Cpd` `SearchPersonByExtId` action |
+| 7 | Search Person match criteria — this build uses **Ext Id / VINCI ID** per project decision (not name+DOB). Known limitation carried from the design doc: this can't by itself distinguish a genuine new hire from a prior-run assignment that hasn't propagated yet | `SearchPerson_Process`, `sc-api-cpd` `SearchPersonByExtId` action |
 | 8 | Error-alert recipients and format are unconfirmed, **and no Email/notification connector exists yet in this project** to reference | `ErrorAlert_Process` only formats the alert text (`out_Subject`/`out_Body`); it does not send anything yet — add a `<service>` step once an Email connector exists |
-| 9 | `LastRunTimestamp` persistence across scheduled runs (the Orchestrator takes it as an input/emits `out_CurrentRunTimestamp` as an output, but the actual storage — a cache table, a file, a custom parameter — isn't wired up) | `Prcs_Dayforce_CPD`, `GetChangedEmployees_Process` |
+| 9 | `LastRunTimestamp` persistence across scheduled runs (the Orchestrator takes it as an input/emits `out_CurrentRunTimestamp` as an output, but the actual storage — a cache table, a file, a custom parameter — isn't wired up) | `p_dayforce_cpd_integration`, `p_GetChangedEmployees` |
 | 10 | The Schedule object (build guide 4.16) is an IICS Administrator config, not part of this Explore export — must be created separately once the process is deployed | N/A |
 | 11 | Fault handling (build guide 4.13) is not wired up — the `<eventContainer>` wrap around `ProcessOneEmployee_Process`'s body failed to import (unrecognized element), so it was removed. `ErrorAlert_Process` still exists and formats an alert, but nothing calls it yet | `ProcessOneEmployee_Process` — add via Process Designer's own Exception/Fault Handler UI once the process is otherwise validated |
 
@@ -108,8 +123,8 @@ Before treating any of these processes as build-ready:
 
 | Process | Role |
 |---|---|
-| `Prcs_Dayforce_CPD` | Orchestrator: get changed employees, get a run-scoped Dayforce token, loop `ProcessOneEmployee_Process` over each XRefCode |
-| `GetChangedEmployees_Process` | Dayforce delta query (build guide 4.4) |
+| `p_dayforce_cpd_integration` | Orchestrator: get changed employees, get a run-scoped Dayforce token, loop `ProcessOneEmployee_Process` over each XRefCode |
+| `p_GetChangedEmployees` | Dayforce delta query (build guide 4.4) |
 | `ProcessOneEmployee_Process` | Per-employee body: detail + search + create-or-update decision + phone reconciliation. Looped by the Orchestrator via `runForEach`. Fault handling not yet wired (see Open Item 11) |
 | `GetEmployeeDetail_Process` | Dayforce employee detail, expanded (build guide 4.5) |
 | `SearchPerson_Process` | CPD search by Ext Id/VINCI ID (build guide 4.6) |

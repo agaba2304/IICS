@@ -94,7 +94,7 @@
                </assignment>
                <service id="svc-updateperson">
                   <title>Update CPD person</title>
-                  <serviceName>Conn-get-post-cpd:UpdatePerson</serviceName>
+                  <serviceName>ac-sc-api-cpd:UpdatePerson</serviceName>
                   <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
@@ -110,7 +110,7 @@
                </service>
                <service id="svc-updatecontract">
                   <title>Update CPD contract</title>
-                  <serviceName>Conn-get-post-cpd:CreateOrUpdateContract</serviceName>
+                  <serviceName>ac-sc-api-cpd:CreateOrUpdateContract</serviceName>
                   <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>

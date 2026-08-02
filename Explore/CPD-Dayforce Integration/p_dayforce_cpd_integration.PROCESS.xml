@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>oEAVR3aaa-gt-16489539-2026-07-27T17:44:00.323Z::pd.xml</types1:EntryId>
-      <types1:Name>Prcs_Dayforce_CPD</types1:Name>
+      <types1:Name>p_dayforce_cpd_integration</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
       <types1:Description>Orchestrator: Dayforce to CPD employee integration (Functional Design &amp; API Build Guide v1.0)</types1:Description>
       <types1:AppliesTo/>
@@ -19,8 +19,8 @@
                   xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
                   xmlns:list="urn:activevos:spi:list:functions"
                   GUID="9YzFkZEq4V5kJlHTF4U0gK"
-                  displayName="Prcs_Dayforce_CPD"
-                  name="Prcs_Dayforce_CPD"
+                  displayName="p_dayforce_cpd_integration"
+                  name="p_dayforce_cpd_integration"
                   overrideAPIName="false">
             <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
@@ -53,7 +53,7 @@
 
 Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in ProcessOneEmployee_Process, not inline here, because IICS's loop-over-a-list mechanism is the runForEach flag on a &lt;subflow&gt; call, not a generic "repeat" step that can wrap an arbitrary multi-step sequence - so the per-employee body had to become its own sub-process to be loopable as a unit.
 
-CPD auth note: no Dayforce-style "Get token" action exists for CPD in SvcConn_Get_Post_Cpd because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to SvcConn_Get_Post_Cpd mirroring the Dayforce pattern and call it here.
+CPD auth note: no Dayforce-style "Get token" action exists for CPD in sc-api-cpd because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to sc-api-cpd mirroring the Dayforce pattern and call it here.
 
 LastRunTimestamp persistence: this process takes it as an input and emits out_CurrentRunTimestamp as an output, but the actual storage (a cache table, a file, a custom parameter) between scheduled runs is not wired up - build guide 4.16 leaves the exact mechanism to be decided.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
@@ -66,7 +66,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                <subflow id="sf-getchanged">
                   <title>Get changed employees</title>
                   <subflowGUID>82BXsUMh6wDfTfmUadXuw1</subflowGUID>
-                  <subflowPath>GetChangedEmployees_Process</subflowPath>
+                  <subflowPath>p_GetChangedEmployees</subflowPath>
                   <runForEach>false</runForEach>
                   <input>
                      <parameter name="in_LastRunTimestamp" source="field" updatable="true">input.in_LastRunTimestamp</parameter>
@@ -83,7 +83,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                </assignment>
                <service id="svc-dftoken">
                   <title>Get Dayforce token (run-scoped)</title>
-                  <serviceName>Conn-get-post-dayforce:Get token</serviceName>
+                  <serviceName>ac-sc-api-dayforce:Get token</serviceName>
                   <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
                   <serviceInput>
                      <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
@@ -116,7 +116,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
          </process>
       </types1:Entry>
       <types1:GUID>9YzFkZEq4V5kJlHTF4U0gK</types1:GUID>
-      <types1:DisplayName>Prcs_Dayforce_CPD</types1:DisplayName>
+      <types1:DisplayName>p_dayforce_cpd_integration</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-07-27T17:46:15.07Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

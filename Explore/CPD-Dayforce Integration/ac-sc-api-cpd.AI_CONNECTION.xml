@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>nYmWR7hsAVR3aaa-gt-17355173-2026-08-01T20:49:13.219Z::conn.xml</types1:EntryId>
-      <types1:Name>Conn-get-post-cpd</types1:Name>
+      <types1:Name>ac-sc-api-cpd</types1:Name>
       <types1:MimeType>application/xml+connection</types1:MimeType>
       <types1:Description/>
       <types1:AppliesTo/>
@@ -16,21 +16,21 @@
       <types1:PublicationStatus>published</types1:PublicationStatus>
       <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
       <types1:PublicationDate>2026-08-01T20:49:32Z</types1:PublicationDate>
-      <types1:PublishedContributionId>project:/rt.connection/Conn-get-post-cpd/Conn-get-post-cpd.conn.xml</types1:PublishedContributionId>
+      <types1:PublishedContributionId>project:/rt.connection/ac-sc-api-cpd/ac-sc-api-cpd.conn.xml</types1:PublishedContributionId>
       <types1:Entry>
          <connection xmlns="http://schemas.informatica.com/socrates/data-services/2014/04/avosConnections.xsd"
                      GUID="0zkkeyRXHvpjfEh4Tgq5sM"
-                     displayName="Conn-get-post-cpd"
-                     label="Conn-get-post-cpd"
-                     name="Conn-get-post-cpd">
+                     displayName="ac-sc-api-cpd"
+                     label="ac-sc-api-cpd"
+                     name="ac-sc-api-cpd">
             <description/>
             <tags>.agent:hubdevinfoadm02</tags>
             <agent>hubdevinfoadm02</agent>
             <businessConnector xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"
                                agentOnly="false"
-                               connectorPath="project:/rt.connector/SvcConn_Get_Post_Cpd/SvcConn_Get_Post_Cpd_svcDef.xml"
+                               connectorPath="project:/rt.connector/sc-api-cpd/sc-api-cpd_svcDef.xml"
                                guid="aDMzhpLojjoke0pnhn1H4E"
-                               name="SvcConn_Get_Post_Cpd"
+                               name="sc-api-cpd"
                                supportsConnectionTest="false"
                                uuid="08cf3af9-56cf-4433-9a42-f9c43b895333">
                <description/>
@@ -38,7 +38,7 @@
          </connection>
       </types1:Entry>
       <types1:GUID>0zkkeyRXHvpjfEh4Tgq5sM</types1:GUID>
-      <types1:DisplayName>Conn-get-post-cpd</types1:DisplayName>
+      <types1:DisplayName>ac-sc-api-cpd</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-08-01T20:50:06.403Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>
