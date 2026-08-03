@@ -118,7 +118,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://api-tst.vinci-construction.net/hr/v1/persons?extId={EmployeeNumber}&amp;amp;extSystemId=11"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons?externalIdentifiers={EmployeeNumber}&amp;amp;extSystemId=11"
                                         verb="GET">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
