@@ -130,7 +130,12 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Full raw response body, used to check for a match and read nested fields (personVinciId, contractId, phoneNumbers) not otherwise declared"
+                            entireResponse="true"
+                            name="RawResponse"
+                            type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -211,6 +216,10 @@
                             name="personVinciId"
                             property="personVinciId"
                             type="string"/>
+                     <field description="Full raw response body, used to read nested fields (e.g. an auto-generated contractId) not otherwise declared"
+                            entireResponse="true"
+                            name="RawResponse"
+                            type="xml"/>
                   </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>

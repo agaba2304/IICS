@@ -110,7 +110,12 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Full raw response body, used to walk the Data list and extract XRefCode values"
+                            entireResponse="true"
+                            name="RawResponse"
+                            type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
@@ -178,7 +183,12 @@
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
-                  <output/>
+                  <output>
+                     <field description="Full raw response body, used to read the expanded Data/WorkContracts/Contacts fields not otherwise declared"
+                            entireResponse="true"
+                            name="RawResponse"
+                            type="xml"/>
+                  </output>
                   <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
                </action>
                <action category=""
