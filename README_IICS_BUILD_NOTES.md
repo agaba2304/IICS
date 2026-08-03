@@ -112,7 +112,11 @@ Fixed by remapping every `<subflowGUID>` in `p_ProcessOneEmployee` and `p_dayfor
 | p_DeletePhoneNumber | `jlM9u0QPKK9ltcTL4PIAGA` | `4z444EUFompiGRMGDU2iwt` |
 | p_ErrorAlert | `1qQ4Y1EizO2lEjgLImYXaP` | `66EdFvuO3RqfR9bDxNDBI6` |
 
-All 8 sibling `<subflowGUID>` references in `p_ProcessOneEmployee` have been updated to these current GUIDs, and `p_dayforce_cpd_integration`'s call to `p_GetChangedEmployees` has been updated too. **`p_dayforce_cpd_integration`'s call to `p_ProcessOneEmployee` is still on a stale GUID** (`2jvNEMZkr0SeKWtoaSMfYh`, from the first resolution) because `p_ProcessOneEmployee` hasn't been reimported yet in this cycle — its real GUID this time around isn't known until it imports successfully. **Two-step import is required**: import `p_ProcessOneEmployee` first (it should now succeed), export it to get its new real GUID, then fix `p_dayforce_cpd_integration`'s remaining reference and import that.
+All 8 sibling `<subflowGUID>` references in `p_ProcessOneEmployee` have been updated to these current GUIDs, and `p_dayforce_cpd_integration`'s call to `p_GetChangedEmployees` has been updated too.
+
+**Resolved (second time)**: `p_ProcessOneEmployee` imported successfully with the corrected references; its new real GUID is `aw0FVD6pWhobtQh5uL0Ou8` (vs. the now-doubly-stale `2jvNEMZkr0SeKWtoaSMfYh` from the first resolution, and the originally-authored `VYIrQ7qaaXeojtBdb9dXHt`). `p_dayforce_cpd_integration`'s `<subflow>` call to it has been updated to that GUID. All 12 processes should now import and resolve cleanly.
+
+**Takeaway for any future full project rebuild**: every time this project is deleted and reimported from scratch, expect this exact two-round dance again — the 10 leaf processes import fine and get fresh GUIDs, then `p_ProcessOneEmployee` needs those GUIDs substituted in before it will import, then `p_dayforce_cpd_integration` needs `p_ProcessOneEmployee`'s own fresh GUID substituted in before *it* will import. A partial re-import of just the processes (not the connectors/connections) does not trigger this, since the Connections already exist and keep their GUIDs.
 
 ## Revision history on the process XML schema
 
