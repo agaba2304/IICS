@@ -99,7 +99,7 @@ else
                <service id="svc-token">
                   <title>Get Dayforce token</title>
                   <serviceName>ac-sc-api-dayforce:Get token</serviceName>
-                  <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
+                  <serviceGUID>6hySfDN0kMFjW58a4QsJiN</serviceGUID>
                   <serviceInput>
                      <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
                      <parameter name="df_password" source="field" updatable="true">input.in_DayforcePassword</parameter>
@@ -114,7 +114,7 @@ else
                <service id="svc-changed">
                   <title>Get changed employees</title>
                   <serviceName>ac-sc-api-dayforce:GetChangedEmployees</serviceName>
-                  <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
+                  <serviceGUID>6hySfDN0kMFjW58a4QsJiN</serviceGUID>
                   <serviceInput>
                      <parameter name="filterUpdatedStartDate" source="field" updatable="true">temp.tmp_filterUpdatedStartDate</parameter>
                      <parameter name="filterUpdatedEndDate" source="field" updatable="true">temp.tmp_filterUpdatedEndDate</parameter>

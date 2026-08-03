@@ -112,7 +112,7 @@
                <service id="svc-detail">
                   <title>Get employee detail (expanded)</title>
                   <serviceName>ac-sc-api-dayforce:GetEmployeeDetail</serviceName>
-                  <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
+                  <serviceGUID>6hySfDN0kMFjW58a4QsJiN</serviceGUID>
                   <serviceInput>
                      <parameter name="xrefCode" source="field" updatable="true">input.in_XRefCode</parameter>
                      <parameter name="access_token" source="field" updatable="true">input.in_access_token</parameter>

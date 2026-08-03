@@ -19,7 +19,7 @@
       <types1:PublishedContributionId>project:/rt.connection/ac-sc-api-cpd/ac-sc-api-cpd.conn.xml</types1:PublishedContributionId>
       <types1:Entry>
          <connection xmlns="http://schemas.informatica.com/socrates/data-services/2014/04/avosConnections.xsd"
-                     GUID="0zkkeyRXHvpjfEh4Tgq5sM"
+                     GUID="3ek6aEwc6QOkqvy88jyFsM"
                      displayName="ac-sc-api-cpd"
                      label="ac-sc-api-cpd"
                      name="ac-sc-api-cpd">
@@ -29,7 +29,7 @@
             <businessConnector xmlns="http://schemas.informatica.com/appmodules/screenflow/2014/04/avosConnectors.xsd"
                                agentOnly="false"
                                connectorPath="project:/rt.connector/sc-api-cpd/sc-api-cpd_svcDef.xml"
-                               guid="aDMzhpLojjoke0pnhn1H4E"
+                               guid="fpG58YCPVm0l9BZGk7R7ir"
                                name="sc-api-cpd"
                                supportsConnectionTest="false"
                                uuid="08cf3af9-56cf-4433-9a42-f9c43b895333">
@@ -37,7 +37,7 @@
             </businessConnector>
          </connection>
       </types1:Entry>
-      <types1:GUID>0zkkeyRXHvpjfEh4Tgq5sM</types1:GUID>
+      <types1:GUID>3ek6aEwc6QOkqvy88jyFsM</types1:GUID>
       <types1:DisplayName>ac-sc-api-cpd</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-08-01T20:50:06.403Z</types1:CurrentServerDateTime>

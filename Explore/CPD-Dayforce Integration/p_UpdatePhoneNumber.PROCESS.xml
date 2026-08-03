@@ -70,7 +70,7 @@
                <service id="svc-updatephone">
                   <title>Update CPD phone number</title>
                   <serviceName>ac-sc-api-cpd:UpdatePhoneNumber</serviceName>
-                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
+                  <serviceGUID>3ek6aEwc6QOkqvy88jyFsM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
                      <parameter name="contractId" source="field" updatable="true">input.in_contractId</parameter>

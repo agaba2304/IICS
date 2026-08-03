@@ -74,7 +74,7 @@ The sample GetPersons.xml response used to build this mapping did not include a 
                <service id="svc-search">
                   <title>Search CPD person by ext id</title>
                   <serviceName>ac-sc-api-cpd:SearchPersonByExtId</serviceName>
-                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
+                  <serviceGUID>3ek6aEwc6QOkqvy88jyFsM</serviceGUID>
                   <serviceInput>
                      <parameter name="EmployeeNumber" source="field" updatable="true">input.in_EmployeeNumber</parameter>
                      <parameter name="cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
