@@ -54,7 +54,7 @@
                </start>
                <service id="svc-writeback">
                   <title>Write VINCI ID to Dayforce</title>
-                  <serviceName>Conn-get-post-dayforce:WriteVinciIdToDayforce</serviceName>
+                  <serviceName>ac-sc-api-dayforce:WriteVinciIdToDayforce</serviceName>
                   <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
                   <serviceInput>
                      <parameter name="xrefCode" source="field" updatable="true">input.in_XRefCode</parameter>

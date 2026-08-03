@@ -53,7 +53,7 @@
 
 Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in p_ProcessOneEmployee, not inline here, because IICS's loop-over-a-list mechanism is the runForEach flag on a &lt;subflow&gt; call, not a generic "repeat" step that can wrap an arbitrary multi-step sequence - so the per-employee body had to become its own sub-process to be loopable as a unit.
 
-CPD auth note: no Dayforce-style "Get token" action exists for CPD in SvcConn_Get_Post_Cpd because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to SvcConn_Get_Post_Cpd mirroring the Dayforce pattern and call it here.
+CPD auth note: no Dayforce-style "Get token" action exists for CPD in sc-api-cpd because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to sc-api-cpd mirroring the Dayforce pattern and call it here.
 
 LastRunTimestamp persistence: this process takes it as an input and emits out_CurrentRunTimestamp as an output, but the actual storage (a cache table, a file, a custom parameter) between scheduled runs is not wired up - build guide 4.16 leaves the exact mechanism to be decided.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
@@ -83,7 +83,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                </assignment>
                <service id="svc-dftoken">
                   <title>Get Dayforce token (run-scoped)</title>
-                  <serviceName>Conn-get-post-dayforce:Get token</serviceName>
+                  <serviceName>ac-sc-api-dayforce:Get token</serviceName>
                   <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
                   <serviceInput>
                      <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
