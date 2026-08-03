@@ -84,7 +84,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                <service id="svc-dftoken">
                   <title>Get Dayforce token (run-scoped)</title>
                   <serviceName>ac-sc-api-dayforce:Get token</serviceName>
-                  <serviceGUID>jEzhmqLAzmBhdgzZWel1I2</serviceGUID>
+                  <serviceGUID>6hySfDN0kMFjW58a4QsJiN</serviceGUID>
                   <serviceInput>
                      <parameter name="df_username" source="field" updatable="true">input.in_DayforceUsername</parameter>
                      <parameter name="df_password" source="field" updatable="true">input.in_DayforcePassword</parameter>

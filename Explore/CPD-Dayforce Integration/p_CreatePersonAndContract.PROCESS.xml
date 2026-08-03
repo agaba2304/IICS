@@ -104,7 +104,7 @@ OPEN ITEMS carried from the design doc (unresolved there too, not introduced by 
                <service id="svc-createperson">
                   <title>Create CPD person</title>
                   <serviceName>ac-sc-api-cpd:CreatePerson</serviceName>
-                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
+                  <serviceGUID>3ek6aEwc6QOkqvy88jyFsM</serviceGUID>
                   <serviceInput>
                      <parameter name="EmployeeNumber" source="field" updatable="true">input.in_EmployeeNumber</parameter>
                      <parameter name="LastName" source="field" updatable="true">input.in_LastName</parameter>
@@ -132,7 +132,7 @@ OPEN ITEMS carried from the design doc (unresolved there too, not introduced by 
                <service id="svc-createcontract">
                   <title>Create CPD contract</title>
                   <serviceName>ac-sc-api-cpd:CreateOrUpdateContract</serviceName>
-                  <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
+                  <serviceGUID>3ek6aEwc6QOkqvy88jyFsM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">output.out_NewPersonVinciId</parameter>
                      <parameter name="contractId" source="field" updatable="true">output.out_NewContractId</parameter>

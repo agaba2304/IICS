@@ -4,7 +4,7 @@
   "sourceOrgName": "VINCI Construction USA - DEV",
   "exportedObjects": [
     {
-      "objectGuid": "kvKgEPCM9y7i86SJRF8qEK",
+      "objectGuid": "3BiZs14UV6Jf9uH8m7hr2n",
       "objectName": "sc-api-dayforce",
       "objectType": "AI_SERVICE_CONNECTOR",
       "path": "/Explore/CPD-Dayforce Integration",
@@ -50,7 +50,7 @@
       }
     },
     {
-      "objectGuid": "aDMzhpLojjoke0pnhn1H4E",
+      "objectGuid": "fpG58YCPVm0l9BZGk7R7ir",
       "objectName": "sc-api-cpd",
       "objectType": "AI_SERVICE_CONNECTOR",
       "path": "/Explore/CPD-Dayforce Integration",
@@ -347,7 +347,7 @@
       }
     },
     {
-      "objectGuid": "jEzhmqLAzmBhdgzZWel1I2",
+      "objectGuid": "6hySfDN0kMFjW58a4QsJiN",
       "objectName": "ac-sc-api-dayforce",
       "objectType": "AI_CONNECTION",
       "path": "/Explore/CPD-Dayforce Integration",
@@ -370,7 +370,7 @@
       }
     },
     {
-      "objectGuid": "0zkkeyRXHvpjfEh4Tgq5sM",
+      "objectGuid": "3ek6aEwc6QOkqvy88jyFsM",
       "objectName": "ac-sc-api-cpd",
       "objectType": "AI_CONNECTION",
       "path": "/Explore/CPD-Dayforce Integration",

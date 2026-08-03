@@ -31,7 +31,16 @@ Every process in the project now carries the `p_` prefix (dropping the old `_Pro
 
 **Note on how this naming attempt differs from the previous one:** an earlier attempt to rename the Connections/Service Connectors by reimporting XML with a changed `displayName` over the *existing* live objects did not work — it either left the live objects untouched or created duplicates (see the reverted commit history on this branch). That attempt has been undone; the four connector/connection objects were then **deleted entirely from the org**, so this export is now a **fresh, first-ever import of all 16 objects into an empty project** — not a rename of anything pre-existing. That sidesteps the duplicate/no-op problem, but carries over the *other* confirmed risk from earlier in this build: **IICS assigns a brand-new GUID to every object on its first import, discarding whatever GUID is in the authored XML** — this was already proven true for processes (see "Process cross-references" below) and has never been directly tested for `AI_SERVICE_CONNECTOR`/`AI_CONNECTION` objects, since those were always created/renamed by hand in the UI in every prior round of this build, never imported fresh from a zip.
 
-**What this means practically**: after importing this zip, if the two Service Connectors or two Connections come back with different GUIDs than the ones authored here (`sc-api-cpd` `aDMzhpLojjoke0pnhn1H4E`, `sc-api-dayforce` `kvKgEPCM9y7i86SJRF8qEK`, `ac-sc-api-cpd` `0zkkeyRXHvpjfEh4Tgq5sM`, `ac-sc-api-dayforce` `jEzhmqLAzmBhdgzZWel1I2`), every process's `<serviceGUID>` will be pointing at the wrong object and its Service step will need re-pointing — export the connectors/connections from the org after import and share them back so the real GUIDs can be substituted in, the same way `subflowGUID` cross-references were fixed earlier in this build.
+**Resolved**: exactly this happened. The first-ever import reassigned fresh GUIDs to all four objects, so every process's `<serviceGUID>` was pointing at the old (authored) GUIDs instead of what the org actually created. Fixed by substituting the real post-import GUIDs everywhere:
+
+| Object | Authored GUID | Real (post-import) GUID |
+|---|---|---|
+| `sc-api-cpd` (Service Connector) | `aDMzhpLojjoke0pnhn1H4E` | `fpG58YCPVm0l9BZGk7R7ir` |
+| `sc-api-dayforce` (Service Connector) | `kvKgEPCM9y7i86SJRF8qEK` | `3BiZs14UV6Jf9uH8m7hr2n` |
+| `ac-sc-api-cpd` (Connection) | `0zkkeyRXHvpjfEh4Tgq5sM` | `3ek6aEwc6QOkqvy88jyFsM` |
+| `ac-sc-api-dayforce` (Connection) | `jEzhmqLAzmBhdgzZWel1I2` | `6hySfDN0kMFjW58a4QsJiN` |
+
+Confirmed via a real export of the org's now-live connectors/connections: the connector/connection *content* (every action, input, output, binding) was already byte-for-byte identical to what's in this repo — only the GUIDs (and the connection's internal reference to its wrapped connector's GUID) needed correcting. Every `<serviceGUID>` across all 12 processes, and the two Connection files' `businessConnector guid="..."` attributes, now point at the real GUIDs above.
 
 ## How this was built
 
@@ -56,8 +65,10 @@ Once published, the user created the Connections (`ac-sc-api-cpd`, `ac-sc-api-da
 
 | | Service Connector (defines actions) | Connection (what `<service>` steps reference) | Connection GUID (`<serviceGUID>`) |
 |---|---|---|---|
-| CPD | `sc-api-cpd` (GUID `aDMzhpLojjoke0pnhn1H4E`, unchanged from the original `cnctr_cpd_get` — renamed in place) | `ac-sc-api-cpd` | `0zkkeyRXHvpjfEh4Tgq5sM` |
-| Dayforce | `sc-api-dayforce` (GUID `kvKgEPCM9y7i86SJRF8qEK`, new — recreated rather than renamed from `cnctr-test-dayforce`) | `ac-sc-api-dayforce` | `jEzhmqLAzmBhdgzZWel1I2` |
+| CPD | `sc-api-cpd` (GUID `fpG58YCPVm0l9BZGk7R7ir`) | `ac-sc-api-cpd` | `3ek6aEwc6QOkqvy88jyFsM` |
+| Dayforce | `sc-api-dayforce` (GUID `3BiZs14UV6Jf9uH8m7hr2n`) | `ac-sc-api-dayforce` | `6hySfDN0kMFjW58a4QsJiN` |
+
+(These are the GUIDs IICS assigned on the fresh import into the emptied project — see "Naming history" above for how they were confirmed and substituted in.)
 
 So every `<serviceName>` is `ac-sc-api-cpd:ActionName` or `ac-sc-api-dayforce:ActionName` (not the `SvcConn_*` connector name), and every matching `<serviceGUID>` is the **Connection's** own GUID, not the connector's. The action names themselves (`SearchPersonByExtId`, `CreatePerson`, etc.) are unchanged — they're still defined on the Service Connector, just addressed indirectly through the Connection.
 
