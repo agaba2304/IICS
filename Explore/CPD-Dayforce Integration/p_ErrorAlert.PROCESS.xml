@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>xpZXrmJaYOBu7TJpkrH1WV-gt-00000010-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
-      <types1:Name>ErrorAlert_Process</types1:Name>
+      <types1:Name>p_ErrorAlert</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
       <types1:Description>Build guide 4.13-4.14. Shared fault handler target: formats a failure notification for a failed employee run.</types1:Description>
       <types1:AppliesTo/>
@@ -19,12 +19,12 @@
                   xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
                   xmlns:list="urn:activevos:spi:list:functions"
                   GUID="xpZXrmJaYOBu7TJpkrH1WV"
-                  displayName="ErrorAlert_Process"
-                  name="ErrorAlert_Process"
+                  displayName="p_ErrorAlert"
+                  name="p_ErrorAlert"
                   overrideAPIName="false">
             <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Build guide 4.13/4.14: receives structured fault details from ProcessOneEmployee_Process's fault handler and formats a notification. NOT WIRED TO AN EMAIL CONNECTOR YET - see notes.</description>
+            <description>Build guide 4.13/4.14: receives structured fault details from p_ProcessOneEmployee's fault handler and formats a notification. NOT WIRED TO AN EMAIL CONNECTOR YET - see notes.</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
             <input>
@@ -82,7 +82,7 @@ OPEN ITEM: this process only formats the alert (Assignment step below) - it does
          </process>
       </types1:Entry>
       <types1:GUID>xpZXrmJaYOBu7TJpkrH1WV</types1:GUID>
-      <types1:DisplayName>ErrorAlert_Process</types1:DisplayName>
+      <types1:DisplayName>p_ErrorAlert</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

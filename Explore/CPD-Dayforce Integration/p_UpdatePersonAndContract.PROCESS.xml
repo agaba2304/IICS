@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>TUaU8PTn1SEcDVyUTRKb6U-gt-00000005-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
-      <types1:Name>UpdatePersonAndContract_Process</types1:Name>
+      <types1:Name>p_UpdatePersonAndContract</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
       <types1:Description>Build guide 4.9. Existing-employee path: full overwrite of the CPD person and contract.</types1:Description>
       <types1:AppliesTo/>
@@ -19,19 +19,19 @@
                   xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
                   xmlns:list="urn:activevos:spi:list:functions"
                   GUID="TUaU8PTn1SEcDVyUTRKb6U"
-                  displayName="UpdatePersonAndContract_Process"
-                  name="UpdatePersonAndContract_Process"
+                  displayName="p_UpdatePersonAndContract"
+                  name="p_UpdatePersonAndContract"
                   overrideAPIName="false">
             <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Scenario 2 (Existing Employee / Update) per the functional design: CPD API 3.2.3 (Update Person, full overwrite) then 3.2.4 (Create/Update Contract). Invoked by ProcessOneEmployee_Process only when SearchPerson_Process.out_PersonFound = true (build guide 4.7, 4.9).</description>
+            <description>Scenario 2 (Existing Employee / Update) per the functional design: CPD API 3.2.3 (Update Person, full overwrite) then 3.2.4 (Create/Update Contract). Invoked by p_ProcessOneEmployee only when p_SearchPerson.out_PersonFound = true (build guide 4.7, 4.9).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
             <input>
-               <parameter description="Existing CPD VINCI ID from SearchPerson_Process" name="in_personVinciId" required="true" type="string">
+               <parameter description="Existing CPD VINCI ID from p_SearchPerson" name="in_personVinciId" required="true" type="string">
                   <options><option name="required">false</option></options>
                </parameter>
-               <parameter description="Existing contractId from SearchPerson_Process" name="in_ExistingContractId" required="true" type="string">
+               <parameter description="Existing contractId from p_SearchPerson" name="in_ExistingContractId" required="true" type="string">
                   <options><option name="required">false</option></options>
                </parameter>
                <parameter description="Dayforce FirstName" name="in_FirstName" required="true" type="string">
@@ -68,7 +68,7 @@
                <field description="" name="tmp_mapped_language_code" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_resolved_COR_ouId" type="string"><options><option name="required">false</option></options></field>
             </tempFields>
-            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md. Shares the same Open Item on resolved_COR_ouId as CreatePersonAndContract_Process (client org cross-reference table pending); the assignment below is a passthrough placeholder, not a real lookup.</notes>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md. Shares the same Open Item on resolved_COR_ouId as p_CreatePersonAndContract (client org cross-reference table pending); the assignment below is a passthrough placeholder, not a real lookup.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>
@@ -131,7 +131,7 @@
          </process>
       </types1:Entry>
       <types1:GUID>TUaU8PTn1SEcDVyUTRKb6U</types1:GUID>
-      <types1:DisplayName>UpdatePersonAndContract_Process</types1:DisplayName>
+      <types1:DisplayName>p_UpdatePersonAndContract</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

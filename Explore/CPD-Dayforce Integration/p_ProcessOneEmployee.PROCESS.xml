@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>VYIrQ7qaaXeojtBdb9dXHt-gt-00000011-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
-      <types1:Name>ProcessOneEmployee_Process</types1:Name>
+      <types1:Name>p_ProcessOneEmployee</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
       <types1:Description>Per-employee body: detail + search + create-or-update + phone reconciliation. Invoked once per changed XRefCode by the Orchestrator via a runForEach subflow call.</types1:Description>
       <types1:AppliesTo/>
@@ -19,12 +19,12 @@
                   xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
                   xmlns:list="urn:activevos:spi:list:functions"
                   GUID="VYIrQ7qaaXeojtBdb9dXHt"
-                  displayName="ProcessOneEmployee_Process"
-                  name="ProcessOneEmployee_Process"
+                  displayName="p_ProcessOneEmployee"
+                  name="p_ProcessOneEmployee"
                   overrideAPIName="false">
             <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Everything the design's functional scenarios 1-4 require for a single Dayforce employee: GetEmployeeDetail_Process, SearchPerson_Process, the Create/Update Decision (build guide 4.7), the matching Create or Update+Writeback path, and phone reconciliation (build guide 4.11-4.12). This process itself is called once per changed XRefCode by the Orchestrator using a runForEach subflow call (build guide 4.15).</description>
+            <description>Everything the design's functional scenarios 1-4 require for a single Dayforce employee: p_GetEmployeeDetail, p_SearchPerson, the Create/Update Decision (build guide 4.7), the matching Create or Update+Writeback path, and phone reconciliation (build guide 4.11-4.12). This process itself is called once per changed XRefCode by the Orchestrator using a runForEach subflow call (build guide 4.15).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
             <input>
@@ -57,9 +57,9 @@
             </tempFields>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md for the full open-items list and schema caveats.
 
-FAULT HANDLING REMOVED (build guide 4.13, not yet re-added): this process originally wrapped the whole body below in an &lt;eventContainer&gt; with a &lt;catch&gt; routing to ErrorAlert_Process on any fault. On import, that step rendered as a blank/un-typed "name:" placeholder stuck in "Validation in progress" - the same symptom seen earlier in this build whenever an element name isn't recognized. Every real IICS export found during this build only ever showed &lt;eventContainer&gt; watching a single activity (one subflow or service call), never a whole multi-step sequence like this one - so that was always flagged as the lowest-confidence part of this file, and it turned out to be wrong. Removed entirely rather than guess a third time; add fault handling back manually in Process Designer once this imports cleanly (most designers expose a per-step or wrap-in-scope "Add Exception/Fault Handler" action in the palette/right-click menu - use that instead of hand-authored XML for this piece). ErrorAlert_Process (which formats the alert message) is unaffected and still importable/callable on its own; it's just not wired into this process's error path yet.
+FAULT HANDLING REMOVED (build guide 4.13, not yet re-added): this process originally wrapped the whole body below in an &lt;eventContainer&gt; with a &lt;catch&gt; routing to p_ErrorAlert on any fault. On import, that step rendered as a blank/un-typed "name:" placeholder stuck in "Validation in progress" - the same symptom seen earlier in this build whenever an element name isn't recognized. Every real IICS export found during this build only ever showed &lt;eventContainer&gt; watching a single activity (one subflow or service call), never a whole multi-step sequence like this one - so that was always flagged as the lowest-confidence part of this file, and it turned out to be wrong. Removed entirely rather than guess a third time; add fault handling back manually in Process Designer once this imports cleanly (most designers expose a per-step or wrap-in-scope "Add Exception/Fault Handler" action in the palette/right-click menu - use that instead of hand-authored XML for this piece). p_ErrorAlert (which formats the alert message) is unaffected and still importable/callable on its own; it's just not wired into this process's error path yet.
 
-LOWEST-CONFIDENCE PART OF THIS FILE NOW: the three phone reconciliation steps (sf-addphones/sf-updatephones/sf-deletephones) use &lt;subflow runForEach="true"&gt; to call AddPhoneNumber_Process/UpdatePhoneNumber_Process/DeletePhoneNumber_Process once per entry in tmp_PhonesToAdd/Update/Delete. Every real IICS export found while researching this schema had runForEach=false; no populated runForEach=true example was available to confirm exactly how per-item field binding works when it's true. Re-check this in Process Designer's own "Repeat"/loop configuration UI after import and correct the binding if needed - the intent (call the phone sub-process once per list entry) is documented here even if the exact XML wiring needs adjustment.
+LOWEST-CONFIDENCE PART OF THIS FILE NOW: the three phone reconciliation steps (sf-addphones/sf-updatephones/sf-deletephones) use &lt;subflow runForEach="true"&gt; to call p_AddPhoneNumber/p_UpdatePhoneNumber/p_DeletePhoneNumber once per entry in tmp_PhonesToAdd/Update/Delete. Every real IICS export found while researching this schema had runForEach=false; no populated runForEach=true example was available to confirm exactly how per-item field binding works when it's true. Re-check this in Process Designer's own "Repeat"/loop configuration UI after import and correct the binding if needed - the intent (call the phone sub-process once per list entry) is documented here even if the exact XML wiring needs adjustment.
 
 Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/ContactDetail) and the Dayforce-contact-type-to-CPD-phoneTypeCode mapping are placeholders - no sample of the expanded Contacts.Items shape was available (see design doc Open Item on phone type code mapping, section 3.2.5).</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
@@ -72,7 +72,7 @@ Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/Conta
                <subflow id="sf-getdetail">
                   <title>Get employee detail</title>
                   <subflowGUID>aDhurm6YPSRfpX6jx48p6H</subflowGUID>
-                  <subflowPath>GetEmployeeDetail_Process</subflowPath>
+                  <subflowPath>p_GetEmployeeDetail</subflowPath>
                   <runForEach>false</runForEach>
                   <input>
                      <parameter name="in_XRefCode" source="field" updatable="true">input.in_XRefCode</parameter>
@@ -93,7 +93,7 @@ Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/Conta
                <subflow id="sf-search">
                   <title>Search CPD for existing person</title>
                   <subflowGUID>7n7iMGoFQB6dEzRA4TyXyr</subflowGUID>
-                  <subflowPath>SearchPerson_Process</subflowPath>
+                  <subflowPath>p_SearchPerson</subflowPath>
                   <runForEach>false</runForEach>
                   <input>
                      <parameter name="in_EmployeeNumber" source="field" updatable="true">output.out_EmployeeNumber</parameter>
@@ -116,7 +116,7 @@ Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/Conta
                      <subflow id="sf-update">
                         <title>Update person + contract</title>
                         <subflowGUID>cPu3ROm1I27g3XxioV28Yq</subflowGUID>
-                        <subflowPath>UpdatePersonAndContract_Process</subflowPath>
+                        <subflowPath>p_UpdatePersonAndContract</subflowPath>
                         <runForEach>false</runForEach>
                         <input>
                            <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_personVinciId</parameter>
@@ -145,7 +145,7 @@ Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/Conta
                      <subflow id="sf-create">
                         <title>Create person + contract</title>
                         <subflowGUID>7fxMqJIQj2eigrAD3AjsqS</subflowGUID>
-                        <subflowPath>CreatePersonAndContract_Process</subflowPath>
+                        <subflowPath>p_CreatePersonAndContract</subflowPath>
                         <runForEach>false</runForEach>
                         <input>
                            <parameter name="in_EmployeeNumber" source="field" updatable="true">temp.tmp_Employee/EmployeeNumber</parameter>
@@ -174,7 +174,7 @@ Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/Conta
                      <subflow id="sf-writeback">
                         <title>Write VINCI ID back to Dayforce</title>
                         <subflowGUID>a7jAK3mkjWNb0FDymjNpiw</subflowGUID>
-                        <subflowPath>WriteVinciId_Process</subflowPath>
+                        <subflowPath>p_WriteVinciId</subflowPath>
                         <runForEach>false</runForEach>
                         <input>
                            <parameter name="in_XRefCode" source="field" updatable="true">input.in_XRefCode</parameter>
@@ -231,7 +231,7 @@ return $e</expression>
                <subflow id="sf-addphones">
                   <title>Add phones (once per PhonesToAdd entry)</title>
                   <subflowGUID>9WIET5Qv4lVl2j23ISZyoe</subflowGUID>
-                  <subflowPath>AddPhoneNumber_Process</subflowPath>
+                  <subflowPath>p_AddPhoneNumber</subflowPath>
                   <runForEach>true</runForEach>
                   <input>
                      <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
@@ -247,7 +247,7 @@ return $e</expression>
                <subflow id="sf-updatephones">
                   <title>Update phones (once per PhonesToUpdate entry)</title>
                   <subflowGUID>0ncoBf8fJhphLIRIv0RXOS</subflowGUID>
-                  <subflowPath>UpdatePhoneNumber_Process</subflowPath>
+                  <subflowPath>p_UpdatePhoneNumber</subflowPath>
                   <runForEach>true</runForEach>
                   <input>
                      <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
@@ -263,7 +263,7 @@ return $e</expression>
                <subflow id="sf-deletephones">
                   <title>Delete phones (once per PhonesToDelete entry)</title>
                   <subflowGUID>jlM9u0QPKK9ltcTL4PIAGA</subflowGUID>
-                  <subflowPath>DeletePhoneNumber_Process</subflowPath>
+                  <subflowPath>p_DeletePhoneNumber</subflowPath>
                   <runForEach>true</runForEach>
                   <input>
                      <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
@@ -281,7 +281,7 @@ return $e</expression>
          </process>
       </types1:Entry>
       <types1:GUID>VYIrQ7qaaXeojtBdb9dXHt</types1:GUID>
-      <types1:DisplayName>ProcessOneEmployee_Process</types1:DisplayName>
+      <types1:DisplayName>p_ProcessOneEmployee</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>
