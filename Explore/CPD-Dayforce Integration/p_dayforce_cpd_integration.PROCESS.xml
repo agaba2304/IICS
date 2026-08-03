@@ -51,7 +51,7 @@
             </tempFields>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports fetched from public reference repositories during this build (Service/Assignment/Subflow/Decision-container/EventContainer structure) - see README_IICS_BUILD_NOTES.md for the full caveats and open-items list.
 
-Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in ProcessOneEmployee_Process, not inline here, because IICS's loop-over-a-list mechanism is the runForEach flag on a &lt;subflow&gt; call, not a generic "repeat" step that can wrap an arbitrary multi-step sequence - so the per-employee body had to become its own sub-process to be loopable as a unit.
+Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in p_ProcessOneEmployee, not inline here, because IICS's loop-over-a-list mechanism is the runForEach flag on a &lt;subflow&gt; call, not a generic "repeat" step that can wrap an arbitrary multi-step sequence - so the per-employee body had to become its own sub-process to be loopable as a unit.
 
 CPD auth note: no Dayforce-style "Get token" action exists for CPD in sc-api-cpd because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to sc-api-cpd mirroring the Dayforce pattern and call it here.
 
@@ -99,7 +99,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                <subflow id="sf-processemployees">
                   <title>Process each changed employee (once per out_ChangedXRefCodes entry)</title>
                   <subflowGUID>2jvNEMZkr0SeKWtoaSMfYh</subflowGUID>
-                  <subflowPath>ProcessOneEmployee_Process</subflowPath>
+                  <subflowPath>p_ProcessOneEmployee</subflowPath>
                   <runForEach>true</runForEach>
                   <input>
                      <parameter name="in_XRefCode" source="field" updatable="true">output.out_ChangedXRefCodes</parameter>

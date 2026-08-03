@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>zBI0ZwpxPB1sKMv6wHgpd1-gt-00000006-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
-      <types1:Name>WriteVinciId_Process</types1:Name>
+      <types1:Name>p_WriteVinciId</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
       <types1:Description>Build guide 4.10. Create path only: writes the new CPD VINCI ID back into Dayforce.</types1:Description>
       <types1:AppliesTo/>
@@ -19,12 +19,12 @@
                   xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
                   xmlns:list="urn:activevos:spi:list:functions"
                   GUID="zBI0ZwpxPB1sKMv6wHgpd1"
-                  displayName="WriteVinciId_Process"
-                  name="WriteVinciId_Process"
+                  displayName="p_WriteVinciId"
+                  name="p_WriteVinciId"
                   overrideAPIName="false">
             <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Scenario 4 (VINCI ID Writeback), Create path only. Wraps Dayforce API 3.1.4 (Write VINCI ID Back, PATCH EmployeeProperties). Invoked by ProcessOneEmployee_Process immediately after CreatePersonAndContract_Process succeeds (build guide 4.10).</description>
+            <description>Scenario 4 (VINCI ID Writeback), Create path only. Wraps Dayforce API 3.1.4 (Write VINCI ID Back, PATCH EmployeeProperties). Invoked by p_ProcessOneEmployee immediately after p_CreatePersonAndContract succeeds (build guide 4.10).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
             <input>
@@ -33,7 +33,7 @@
                      <option name="required">false</option>
                   </options>
                </parameter>
-               <parameter description="VINCI ID returned by CreatePersonAndContract_Process" name="in_NewPersonVinciId" required="true" type="string">
+               <parameter description="VINCI ID returned by p_CreatePersonAndContract" name="in_NewPersonVinciId" required="true" type="string">
                   <options>
                      <option name="required">false</option>
                   </options>
@@ -70,7 +70,7 @@
          </process>
       </types1:Entry>
       <types1:GUID>zBI0ZwpxPB1sKMv6wHgpd1</types1:GUID>
-      <types1:DisplayName>WriteVinciId_Process</types1:DisplayName>
+      <types1:DisplayName>p_WriteVinciId</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

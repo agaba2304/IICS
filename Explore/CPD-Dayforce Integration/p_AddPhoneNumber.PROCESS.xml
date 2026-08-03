@@ -1,10 +1,10 @@
 <aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
-      <types1:EntryId>2MQBdKskt65bUvaVMnxm9g-gt-00000008-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
-      <types1:Name>UpdatePhoneNumber_Process</types1:Name>
+      <types1:EntryId>AwxVtpAsbduNEHRbWUeFYb-gt-00000007-2026-07-27T17:44:00.000Z::pd.xml</types1:EntryId>
+      <types1:Name>p_AddPhoneNumber</types1:Name>
       <types1:MimeType>application/xml+process</types1:MimeType>
-      <types1:Description>Build guide 4.12. Updates one phone number on a CPD contract.</types1:Description>
+      <types1:Description>Build guide 4.12. Adds one phone number to a CPD contract.</types1:Description>
       <types1:AppliesTo/>
       <types1:Tags/>
       <types1:VersionLabel>1.0</types1:VersionLabel>
@@ -18,13 +18,13 @@
          <process xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2010/10/avosScreenflow.xsd"
                   xmlns:tfm="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"
                   xmlns:list="urn:activevos:spi:list:functions"
-                  GUID="2MQBdKskt65bUvaVMnxm9g"
-                  displayName="UpdatePhoneNumber_Process"
-                  name="UpdatePhoneNumber_Process"
+                  GUID="AwxVtpAsbduNEHRbWUeFYb"
+                  displayName="p_AddPhoneNumber"
+                  name="p_AddPhoneNumber"
                   overrideAPIName="false">
             <parameterSet xmlns="http://schemas.active-endpoints.com/appmodules/screenflow/2021/04/taskflowModel.xsd"/>
             <appliesTo/>
-            <description>Scenario 3 (Phone Number Changes). Wraps CPD API 3.2.6 (Update Phone Number). Invoked by ProcessOneEmployee_Process once per entry in PhonesToUpdate, via a runForEach subflow call (build guide 4.11-4.12).</description>
+            <description>Scenario 3 (Phone Number Changes). Wraps CPD API 3.2.5 (Add Phone Number). Invoked by p_ProcessOneEmployee once per entry in PhonesToAdd, via a runForEach subflow call (build guide 4.11-4.12).</description>
             <tags/>
             <generator>Informatica Process Designer 11</generator>
             <input>
@@ -38,7 +38,7 @@
                      <option name="required">false</option>
                   </options>
                </parameter>
-               <parameter description="CPD phone type code identifying which phone entry to update" name="in_phoneTypeCode" required="true" type="string">
+               <parameter description="CPD phone type code (mapping TBD - see README_IICS_BUILD_NOTES.md)" name="in_phoneTypeCode" required="true" type="string">
                   <options>
                      <option name="required">false</option>
                   </options>
@@ -65,11 +65,11 @@
             </deployment>
             <flow id="a">
                <start id="b">
-                  <link id="l1" targetId="svc-updatephone"/>
+                  <link id="l1" targetId="svc-addphone"/>
                </start>
-               <service id="svc-updatephone">
-                  <title>Update CPD phone number</title>
-                  <serviceName>ac-sc-api-cpd:UpdatePhoneNumber</serviceName>
+               <service id="svc-addphone">
+                  <title>Add CPD phone number</title>
+                  <serviceName>ac-sc-api-cpd:AddPhoneNumber</serviceName>
                   <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
@@ -87,8 +87,8 @@
             </flow>
          </process>
       </types1:Entry>
-      <types1:GUID>2MQBdKskt65bUvaVMnxm9g</types1:GUID>
-      <types1:DisplayName>UpdatePhoneNumber_Process</types1:DisplayName>
+      <types1:GUID>AwxVtpAsbduNEHRbWUeFYb</types1:GUID>
+      <types1:DisplayName>p_AddPhoneNumber</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-07-27T17:46:15.000Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

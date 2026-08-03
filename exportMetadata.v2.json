@@ -118,7 +118,7 @@
     },
     {
       "objectGuid": "KPffEx7EOwfjp7pn7kzZ2M",
-      "objectName": "GetEmployeeDetail_Process",
+      "objectName": "p_GetEmployeeDetail",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -141,7 +141,7 @@
     },
     {
       "objectGuid": "DB1JRZkPV3HvqKV1vfjqgb",
-      "objectName": "SearchPerson_Process",
+      "objectName": "p_SearchPerson",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -164,7 +164,7 @@
     },
     {
       "objectGuid": "ugYTHbESlUs3xY4PcfoFaW",
-      "objectName": "CreatePersonAndContract_Process",
+      "objectName": "p_CreatePersonAndContract",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -187,7 +187,7 @@
     },
     {
       "objectGuid": "TUaU8PTn1SEcDVyUTRKb6U",
-      "objectName": "UpdatePersonAndContract_Process",
+      "objectName": "p_UpdatePersonAndContract",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -210,7 +210,7 @@
     },
     {
       "objectGuid": "zBI0ZwpxPB1sKMv6wHgpd1",
-      "objectName": "WriteVinciId_Process",
+      "objectName": "p_WriteVinciId",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -233,7 +233,7 @@
     },
     {
       "objectGuid": "AwxVtpAsbduNEHRbWUeFYb",
-      "objectName": "AddPhoneNumber_Process",
+      "objectName": "p_AddPhoneNumber",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -256,7 +256,7 @@
     },
     {
       "objectGuid": "2MQBdKskt65bUvaVMnxm9g",
-      "objectName": "UpdatePhoneNumber_Process",
+      "objectName": "p_UpdatePhoneNumber",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -279,7 +279,7 @@
     },
     {
       "objectGuid": "MrEEevrr6RSALfwqq4ZHmt",
-      "objectName": "DeletePhoneNumber_Process",
+      "objectName": "p_DeletePhoneNumber",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -302,7 +302,7 @@
     },
     {
       "objectGuid": "xpZXrmJaYOBu7TJpkrH1WV",
-      "objectName": "ErrorAlert_Process",
+      "objectName": "p_ErrorAlert",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -325,7 +325,7 @@
     },
     {
       "objectGuid": "VYIrQ7qaaXeojtBdb9dXHt",
-      "objectName": "ProcessOneEmployee_Process",
+      "objectName": "p_ProcessOneEmployee",
       "objectType": "PROCESS",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
