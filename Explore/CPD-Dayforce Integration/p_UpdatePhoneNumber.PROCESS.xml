@@ -69,7 +69,7 @@
                </start>
                <service id="svc-updatephone">
                   <title>Update CPD phone number</title>
-                  <serviceName>Conn-get-post-cpd:UpdatePhoneNumber</serviceName>
+                  <serviceName>ac-sc-api-cpd:UpdatePhoneNumber</serviceName>
                   <serviceGUID>0zkkeyRXHvpjfEh4Tgq5sM</serviceGUID>
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
