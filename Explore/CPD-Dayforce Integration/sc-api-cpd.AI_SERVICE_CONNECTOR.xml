@@ -118,7 +118,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons?extId={EmployeeNumber}&amp;amp;extSystemId=11"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons?extId={EmployeeNumber}&amp;amp;extSystemId=11"
                                         verb="GET">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -187,7 +187,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons"
                                         verb="POST">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -268,7 +268,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons/{personVinciId}"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons/{personVinciId}"
                                         verb="PATCH">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -336,7 +336,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons/{personVinciId}/contracts/{contractId}"
                                         verb="PATCH">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -399,7 +399,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber"
                                         verb="POST">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -456,7 +456,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber/{phoneTypeCode}"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber/{phoneTypeCode}"
                                         verb="PUT">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -504,7 +504,7 @@
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://{cpd-host}/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber/{phoneTypeCode}"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons/{personVinciId}/contracts/{contractId}/phoneNumber/{phoneTypeCode}"
                                         verb="DELETE">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
