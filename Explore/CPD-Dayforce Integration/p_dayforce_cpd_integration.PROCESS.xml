@@ -65,7 +65,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                </start>
                <subflow id="sf-getchanged">
                   <title>Get changed employees</title>
-                  <subflowGUID>82BXsUMh6wDfTfmUadXuw1</subflowGUID>
+                  <subflowGUID>5GazV17lbwwifrMRgR2yGB</subflowGUID>
                   <subflowPath>p_GetChangedEmployees</subflowPath>
                   <runForEach>false</runForEach>
                   <input>
