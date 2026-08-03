@@ -95,7 +95,24 @@ Fixed by remapping every `<subflowGUID>` in `p_ProcessOneEmployee` and `p_dayfor
 | p_DeletePhoneNumber | `MrEEevrr6RSALfwqq4ZHmt` | `jlM9u0QPKK9ltcTL4PIAGA` |
 | p_ErrorAlert | `xpZXrmJaYOBu7TJpkrH1WV` | `1qQ4Y1EizO2lEjgLImYXaP` |
 
-**Resolved**: `p_ProcessOneEmployee` imported successfully once its 9 references were corrected (real post-import GUID: `2jvNEMZkr0SeKWtoaSMfYh`, vs. the authored `VYIrQ7qaaXeojtBdb9dXHt`). `p_dayforce_cpd_integration`'s `<subflow>` call to it has been updated to that real GUID. All 11 processes should now import and resolve cleanly.
+**Resolved (first time)**: `p_ProcessOneEmployee` imported successfully once its 9 references were corrected (real post-import GUID: `2jvNEMZkr0SeKWtoaSMfYh`, vs. the authored `VYIrQ7qaaXeojtBdb9dXHt`). `p_dayforce_cpd_integration`'s `<subflow>` call to it was updated to that real GUID, and all 11 processes imported and resolved cleanly.
+
+**Recurred after the project was emptied and rebuilt from scratch** (see "Naming history" above): since the whole `CPD-Dayforce Integration` project was deleted and every object reimported fresh under its `p_`-prefixed name, IICS assigned a **new** set of GUIDs to all 10 sub-processes — the old post-import GUIDs in the table above are now stale. The exact same 2 processes (`p_ProcessOneEmployee`, `p_dayforce_cpd_integration`) failed again with the same "Internal application provider error" for the same reason. Fixed the same way, using a fresh export of the 10 successfully-imported processes to get the new real GUIDs:
+
+| Process | Previous real GUID (now stale) | Current real GUID |
+|---|---|---|
+| p_GetChangedEmployees | `82BXsUMh6wDfTfmUadXuw1` | `5GazV17lbwwifrMRgR2yGB` |
+| p_GetEmployeeDetail | `aDhurm6YPSRfpX6jx48p6H` | `265GBjYvi46gdOJB8fJJM3` |
+| p_SearchPerson | `7n7iMGoFQB6dEzRA4TyXyr` | `iUSMDrm4KKQfyFo32SwBSr` |
+| p_CreatePersonAndContract | `7fxMqJIQj2eigrAD3AjsqS` | `8Z9az8QKChed7X499q1dm7` |
+| p_UpdatePersonAndContract | `cPu3ROm1I27g3XxioV28Yq` | `3v42BhrdaWnjtVpmJkaTK7` |
+| p_WriteVinciId | `a7jAK3mkjWNb0FDymjNpiw` | `0mPVVn6Wjuai6YUf2dDOE4` |
+| p_AddPhoneNumber | `9WIET5Qv4lVl2j23ISZyoe` | `l9dSmhTuTIffT30huW5QsB` |
+| p_UpdatePhoneNumber | `0ncoBf8fJhphLIRIv0RXOS` | `06iBdoGBgpwd5YRixGqFEb` |
+| p_DeletePhoneNumber | `jlM9u0QPKK9ltcTL4PIAGA` | `4z444EUFompiGRMGDU2iwt` |
+| p_ErrorAlert | `1qQ4Y1EizO2lEjgLImYXaP` | `66EdFvuO3RqfR9bDxNDBI6` |
+
+All 8 sibling `<subflowGUID>` references in `p_ProcessOneEmployee` have been updated to these current GUIDs, and `p_dayforce_cpd_integration`'s call to `p_GetChangedEmployees` has been updated too. **`p_dayforce_cpd_integration`'s call to `p_ProcessOneEmployee` is still on a stale GUID** (`2jvNEMZkr0SeKWtoaSMfYh`, from the first resolution) because `p_ProcessOneEmployee` hasn't been reimported yet in this cycle — its real GUID this time around isn't known until it imports successfully. **Two-step import is required**: import `p_ProcessOneEmployee` first (it should now succeed), export it to get its new real GUID, then fix `p_dayforce_cpd_integration`'s remaining reference and import that.
 
 ## Revision history on the process XML schema
 
