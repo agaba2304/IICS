@@ -57,7 +57,7 @@
                </field>
             </output>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md.
-OPEN ITEM: this process only formats the alert (Assignment step below) - it does not yet call an Email/notification connector, because no such connector currently exists in this project's scope to reference by a real serviceGUID (inventing one would fail import, per the lesson learned building the rest of this package). Once the client confirms recipients and format (build guide 4.14) and an Email connection/connector is created in this IICS org, add a &lt;service&gt; step here calling it (mirroring the sc-api-dayforce/sc-api-cpd &lt;service&gt; pattern used throughout this package), mapping out_Subject/out_Body into its input fields.</notes>
+OPEN ITEM: this process only formats the alert (Assignment step below) - it does not yet call an Email/notification connector, because no such connector currently exists in this project's scope to reference by a real serviceGUID (inventing one would fail import, per the lesson learned building the rest of this package). Once the client confirms recipients and format (build guide 4.14) and an Email connection/connector is created in this IICS org, add a &lt;service&gt; step here calling it (mirroring the SvcConn_get_post_dayforce/SvcConn_Get_Post_Cpd &lt;service&gt; pattern used throughout this package), mapping out_Subject/out_Body into its input fields.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>

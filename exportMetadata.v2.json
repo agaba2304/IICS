@@ -5,7 +5,7 @@
   "exportedObjects": [
     {
       "objectGuid": "kvKgEPCM9y7i86SJRF8qEK",
-      "objectName": "sc-api-dayforce",
+      "objectName": "SvcConn_get_post_dayforce",
       "objectType": "AI_SERVICE_CONNECTOR",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -51,7 +51,7 @@
     },
     {
       "objectGuid": "aDMzhpLojjoke0pnhn1H4E",
-      "objectName": "sc-api-cpd",
+      "objectName": "SvcConn_Get_Post_Cpd",
       "objectType": "AI_SERVICE_CONNECTOR",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -348,7 +348,7 @@
     },
     {
       "objectGuid": "jEzhmqLAzmBhdgzZWel1I2",
-      "objectName": "ac-sc-api-dayforce",
+      "objectName": "Conn-get-post-dayforce",
       "objectType": "AI_CONNECTION",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,
@@ -371,7 +371,7 @@
     },
     {
       "objectGuid": "0zkkeyRXHvpjfEh4Tgq5sM",
-      "objectName": "ac-sc-api-cpd",
+      "objectName": "Conn-get-post-cpd",
       "objectType": "AI_CONNECTION",
       "path": "/Explore/CPD-Dayforce Integration",
       "providerName": null,

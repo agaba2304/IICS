@@ -2,7 +2,7 @@
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
       <types1:EntryId>QREhNWIsoZduD2L-gt-28543298-2026-06-19T18:48:58.683Z::svc.xml</types1:EntryId>
-      <types1:Name>sc-api-cpd</types1:Name>
+      <types1:Name>SvcConn_Get_Post_Cpd</types1:Name>
       <types1:ParentFlowIds>nYmWR7hsAVR3aaa-gt-17355173-2026-08-01T20:49:13.219Z::conn.xml</types1:ParentFlowIds>
       <types1:MimeType>application/xml+businesssconnector</types1:MimeType>
       <types1:Description/>
@@ -18,14 +18,14 @@
       <types1:PublicationStatus>published</types1:PublicationStatus>
       <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
       <types1:PublicationDate>2026-08-01T20:48:27Z</types1:PublicationDate>
-      <types1:PublishedContributionId>project:/rt.connector/sc-api-cpd/sc-api-cpd_svcDef.xml</types1:PublishedContributionId>
+      <types1:PublishedContributionId>project:/rt.connector/SvcConn_Get_Post_Cpd/SvcConn_Get_Post_Cpd_svcDef.xml</types1:PublishedContributionId>
       <types1:Entry>
          <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
                             agentOnly="false"
                             debug="false"
-                            displayName="sc-api-cpd"
+                            displayName="SvcConn_Get_Post_Cpd"
                             label=""
-                            name="sc-api-cpd"
+                            name="SvcConn_Get_Post_Cpd"
                             uuid="08cf3af9-56cf-4433-9a42-f9c43b895333">
             <description/>
             <tags/>
@@ -514,7 +514,7 @@
          </businessConnector>
       </types1:Entry>
       <types1:GUID>aDMzhpLojjoke0pnhn1H4E</types1:GUID>
-      <types1:DisplayName>sc-api-cpd</types1:DisplayName>
+      <types1:DisplayName>SvcConn_Get_Post_Cpd</types1:DisplayName>
    </types1:Item>
    <types1:CurrentServerDateTime>2026-08-01T20:50:06.365Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>

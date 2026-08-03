@@ -1,7 +1,7 @@
 objectPath,objectName,objectType,id
-/Explore/CPD-Dayforce Integration,sc-api-dayforce,AI_SERVICE_CONNECTOR,kvKgEPCM9y7i86SJRF8qEK
+/Explore/CPD-Dayforce Integration,SvcConn_get_post_dayforce,AI_SERVICE_CONNECTOR,kvKgEPCM9y7i86SJRF8qEK
 /Explore/CPD-Dayforce Integration,p_dayforce_cpd_integration,PROCESS,9YzFkZEq4V5kJlHTF4U0gK
-/Explore/CPD-Dayforce Integration,sc-api-cpd,AI_SERVICE_CONNECTOR,aDMzhpLojjoke0pnhn1H4E
+/Explore/CPD-Dayforce Integration,SvcConn_Get_Post_Cpd,AI_SERVICE_CONNECTOR,aDMzhpLojjoke0pnhn1H4E
 /Explore/CPD-Dayforce Integration,p_GetChangedEmployees,PROCESS,3oBo3euvAbRVfbijBuFPeO
 /Explore/CPD-Dayforce Integration,p_GetEmployeeDetail,PROCESS,KPffEx7EOwfjp7pn7kzZ2M
 /Explore/CPD-Dayforce Integration,p_SearchPerson,PROCESS,DB1JRZkPV3HvqKV1vfjqgb
@@ -13,6 +13,6 @@ objectPath,objectName,objectType,id
 /Explore/CPD-Dayforce Integration,p_DeletePhoneNumber,PROCESS,MrEEevrr6RSALfwqq4ZHmt
 /Explore/CPD-Dayforce Integration,p_ErrorAlert,PROCESS,xpZXrmJaYOBu7TJpkrH1WV
 /Explore/CPD-Dayforce Integration,p_ProcessOneEmployee,PROCESS,VYIrQ7qaaXeojtBdb9dXHt
-/Explore/CPD-Dayforce Integration,ac-sc-api-dayforce,AI_CONNECTION,jEzhmqLAzmBhdgzZWel1I2
-/Explore/CPD-Dayforce Integration,ac-sc-api-cpd,AI_CONNECTION,0zkkeyRXHvpjfEh4Tgq5sM
+/Explore/CPD-Dayforce Integration,Conn-get-post-dayforce,AI_CONNECTION,jEzhmqLAzmBhdgzZWel1I2
+/Explore/CPD-Dayforce Integration,Conn-get-post-cpd,AI_CONNECTION,0zkkeyRXHvpjfEh4Tgq5sM
 /Explore,CPD-Dayforce Integration,Project,6KXDYfx2SWekF2qeCjXiCr
