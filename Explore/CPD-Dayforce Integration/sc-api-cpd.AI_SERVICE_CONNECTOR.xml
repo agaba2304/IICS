@@ -262,31 +262,55 @@
                            <header name="Content-Type">application/json</header>
                            <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
-                        <body>{
-   "externalIdentifiers": [{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }],
+                        <body>{{
+   "externalIdentifiers": [{{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }}],
+   "salutationCode": 1,
+   "titleCode": 2,
    "birthLastName": "{ $LastName }",
-   "birthFirstName": "{ $FirstName }",
    "preferredLastName": "{ $PreferredLastName_or_LastName }",
+   "birthFirstName": "{ $FirstName }",
    "preferredFirstName": "{ $PreferredFirstName_or_FirstName }",
    "birthDate": "{ $BirthDate }",
-   "salutationCode": 1,
    "groupEntryDate": "{ $SeniorityDate }",
    "preferredLanguageIsoCode": "{ $mapped_language_code }",
    "directoryAvailability": 1,
-   "digitalIdentity": { "digitalIdentitySystemCode": 1, "validFrom": "{ $SeniorityDate }", "includeEmail": true },
-   "contracts": [{
-      "contractExtReferences": [{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }],
+   "digitalIdentity": {{ "digitalIdentitySystemCode": 1, "validFrom": "{ $SeniorityDate }", "includeEmail": true }},
+   "contracts": [{{
+      "contractExtReferences": [{{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }}],
       "startDate": "{ $HireDate }",
       "endDate": "{ $EmploymentStatus_EffectiveTo }",
       "staffTypeCode": 1,
       "isLocalContract": false,
       "contractTypeCode": 1,
       "operationalJobTitle": "{ $Job }",
-      "organizationalUnitAssignment": { "ouId": "{ $resolved_COR_ouId }" },
-      "legalEntityAssignment": { "id": "{ $resolved_COR_ouId }", "idType": 2 },
-      "extraInformation": { "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }" }
-   }]
-}</body>
+      "organizationalUnitAssignment": {{ "ouId": { $resolved_COR_ouId }, "service": {{ "serviceId": "string" }} }},
+      "legalEntityAssignment": {{ "id": "{ $resolved_COR_ouId }", "idType": 2 }},
+      "externalStaffCompanyName": "VINCI ENERGIE",
+      "hrInformation": {{
+         "payrollJobTitle": "{ $Job }",
+         "isSocialReportingManager": true,
+         "professionCode": 15028,
+         "staffCategoryCode": 1,
+         "employeePayrollSystemCode": 2
+      }},
+      "extraInformation": {{
+         "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }",
+         "workScheduleRule": "plan de roulement",
+         "hrAreaCode": "hr123",
+         "hrSubAreaCode": "HrSub1234",
+         "payrollAreaCode": "ANAEL1234",
+         "timeManagementScheduleCode": 21,
+         "activityTypeCode": "3",
+         "contractExternalIdentifier": "piXID1234VCF",
+         "supplierExternalIdentifierId": "S4-Suppliers-12222",
+         "managerErpId": "S4-LAMX-2123",
+         "jobCode": "K2345",
+         "nonDigitalStaffEmailAddress": "tempworker1@manpower.com",
+         "accountingUnitId": "string"
+      }}
+   }}],
+   "auditTrail": {{ "creationUser": {{ "userId": "01234567", "userIdType": "vinciId" }}, "creationSourceCode": 1 }}
+}}</body>
                      </restSimpleBinding>
                   </binding>
                   <output>
@@ -356,14 +380,14 @@
                            <header name="Content-Type">application/json</header>
                            <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
-                        <body>{
+                        <body>{{
    "birthLastName": "{ $LastName }",
    "birthFirstName": "{ $FirstName }",
    "preferredLastName": "{ $PreferredLastName_or_LastName }",
    "preferredFirstName": "{ $PreferredFirstName_or_FirstName }",
    "birthDate": "{ $BirthDate }",
    "preferredLanguageIsoCode": "{ $mapped_language_code }"
-}</body>
+}}</body>
                      </restSimpleBinding>
                   </binding>
                   <output/>
@@ -424,17 +448,17 @@
                            <header name="Content-Type">application/json</header>
                            <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
-                        <body>{
+                        <body>{{
    "startDate": "{ $HireDate }",
    "endDate": "{ $EmploymentStatus_EffectiveTo }",
    "staffTypeCode": 1,
    "contractTypeCode": 1,
    "isLocalContract": false,
-   "organizationalUnitAssignment": { "ouId": "{ $resolved_COR_ouId }" },
-   "legalEntityAssignment": { "id": "{ $resolved_COR_ouId }", "idType": 2 },
+   "organizationalUnitAssignment": {{ "ouId": { $resolved_COR_ouId } }},
+   "legalEntityAssignment": {{ "id": "{ $resolved_COR_ouId }", "idType": 2 }},
    "operationalJobTitle": "{ $Job }",
-   "extraInformation": { "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }" }
-}</body>
+   "extraInformation": {{ "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }" }}
+}}</body>
                      </restSimpleBinding>
                   </binding>
                   <output/>
@@ -487,11 +511,11 @@
                            <header name="Content-Type">application/json</header>
                            <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
-                        <body>{
+                        <body>{{
    "phoneTypeCode": "{ $phoneTypeCode }",
    "diallingCode": "{ $diallingCode }",
    "number": "{ $number }"
-}</body>
+}}</body>
                      </restSimpleBinding>
                   </binding>
                   <output/>
@@ -544,10 +568,10 @@
                            <header name="Content-Type">application/json</header>
                            <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
-                        <body>{
+                        <body>{{
    "diallingCode": "{ $diallingCode }",
    "number": "{ $number }"
-}</body>
+}}</body>
                      </restSimpleBinding>
                   </binding>
                   <output/>
