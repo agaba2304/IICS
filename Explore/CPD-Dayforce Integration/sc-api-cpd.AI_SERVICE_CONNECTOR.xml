@@ -283,7 +283,7 @@
       "isLocalContract": false,
       "contractTypeCode": 1,
       "operationalJobTitle": "{ $Job }",
-      "organizationalUnitAssignment": {{ "ouId": { $resolved_COR_ouId }, "service": {{ "serviceId": "string" }} }},
+      "organizationalUnitAssignment": {{ "ouId": { $resolved_COR_ouId } }},
       "legalEntityAssignment": {{ "id": "{ $resolved_COR_ouId }", "idType": 2 }},
       "externalStaffCompanyName": "VINCI ENERGIE",
       "hrInformation": {{
