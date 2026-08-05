@@ -1,9 +1,8 @@
 <aetgt:getResponse xmlns:aetgt="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd"
                    xmlns:types1="http://schemas.active-endpoints.com/appmodules/repository/2010/10/avrepository.xsd">
    <types1:Item>
-      <types1:EntryId>QREhNWIsoZduD2L-gt-28543298-2026-06-19T18:48:58.683Z::svc.xml</types1:EntryId>
+      <types1:EntryId>1I7PYWiaaa-gt-22451862-2026-08-03T11:18:04.685Z::svc.xml</types1:EntryId>
       <types1:Name>sc-api-cpd</types1:Name>
-      <types1:ParentFlowIds>nYmWR7hsAVR3aaa-gt-17355173-2026-08-01T20:49:13.219Z::conn.xml</types1:ParentFlowIds>
       <types1:MimeType>application/xml+businesssconnector</types1:MimeType>
       <types1:Description/>
       <types1:AppliesTo/>
@@ -12,13 +11,13 @@
       <types1:State>CURRENT</types1:State>
       <types1:ProcessGroup/>
       <types1:CreatedBy>abdul.mannuru@hubbard.com.dev</types1:CreatedBy>
-      <types1:CreationDate>2026-06-19T18:48:59Z</types1:CreationDate>
+      <types1:CreationDate>2026-08-03T11:18:05Z</types1:CreationDate>
       <types1:ModifiedBy>abdul.mannuru@hubbard.com.dev</types1:ModifiedBy>
-      <types1:ModificationDate>2026-08-01T20:48:17Z</types1:ModificationDate>
-      <types1:PublicationStatus>published</types1:PublicationStatus>
+      <types1:ModificationDate>2026-08-04T17:49:41Z</types1:ModificationDate>
+      <types1:PublicationStatus>out-of-date</types1:PublicationStatus>
       <types1:PublishedBy>abdul.mannuru@hubbard.com.dev</types1:PublishedBy>
-      <types1:PublicationDate>2026-08-01T20:48:27Z</types1:PublicationDate>
-      <types1:PublishedContributionId>project:/rt.connector/sc-api-cpd/sc-api-cpd_svcDef.xml</types1:PublishedContributionId>
+      <types1:PublicationDate>2026-08-03T11:28:18Z</types1:PublicationDate>
+      <types1:PublishedContributionId>project:/rt.connector/sc_api_cpd/sc_api_cpd_svcDef.xml</types1:PublishedContributionId>
       <types1:Entry>
          <businessConnector xmlns="http://schemas.informatica.com/socrates/data-services/2014/05/business-connector-model.xsd"
                             agentOnly="false"
@@ -41,9 +40,12 @@
                        responseEncoding="">
                   <description>Original dummy/test call against the validated test host. Retained for ad hoc use; SearchPersonByExtId below is what the orchestrator actually calls.</description>
                   <input>
-                     <parameter description="CPD API bearer token"
+                     <parameter description=""
+                                label=""
                                 name="cpd_token"
+                                nogen="true"
                                 required="false"
+                                testWith="eyJvcmciOiI1YzNmMTJlMjQyMjYyM2E0ZjY1OTk4YmUiLCJpZCI6IjA3M2Q1ZWY1OGNiNTRiYzM5Njk3ZDFlYThhYTRhZmUzIiwiaCI6Im11cm11cjY0In0="
                                 type="string"/>
                   </input>
                   <binding>
@@ -55,7 +57,7 @@
                            <keyStorePassword/>
                         </mutualAuth>
                         <httpHeaders>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                            <header name="Accept">application/json</header>
                            <header name="Content-Type">application/json</header>
                         </httpHeaders>
@@ -88,7 +90,7 @@
                            <keyStorePassword/>
                         </mutualAuth>
                         <httpHeaders>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                            <header name="Content-Type">application/json</header>
                            <header name="Accept">application/json</header>
                         </httpHeaders>
@@ -107,18 +109,24 @@
                        responseEncoding="">
                   <description>3.2.1 Search Person (Interface i639), Ext Id / VINCI ID match. Matches on the external identifier pair (extSystemId=11 for Dayforce, per the Create Person payload) rather than name+DOB. NOTE (from design doc): this criteria only finds a person once a VINCI ID/ext id has already been assigned by a prior run - it cannot by itself distinguish a true brand-new hire from an API/timing miss, so PersonFound=false is treated as "create" per the functional scenarios. Consumed by p_SearchPerson (build guide 4.6).</description>
                   <input>
-                     <parameter description="Dayforce EmployeeNumber, used as the CPD external identifier value"
-                                name="EmployeeNumber"
-                                required="false"
-                                type="string"/>
-                     <parameter description="CPD API bearer token"
+                     <parameter description=""
+                                label=""
                                 name="cpd_token"
+                                nogen="true"
                                 required="false"
+                                testWith="eyJvcmciOiI1YzNmMTJlMjQyMjYyM2E0ZjY1OTk4YmUiLCJpZCI6IjA3M2Q1ZWY1OGNiNTRiYzM5Njk3ZDFlYThhYTRhZmUzIiwiaCI6Im11cm11cjY0In0="
+                                type="string"/>
+                     <parameter description=""
+                                label=""
+                                name="EmployeeNumber"
+                                nogen="true"
+                                required="false"
+                                testWith="6308284"
                                 type="string"/>
                   </input>
                   <binding>
                      <restSimpleBinding multiUsing="semicolonSeparated"
-                                        url="https://api-tst.vinci-construction.net/hr/v1/persons?externalIdentifiers={EmployeeNumber}&amp;amp;extSystemId=11"
+                                        url="https://api-tst.vinci-construction.net/hr/v1/persons?externalIdentifiers={ $EmployeeNumber }&amp;amp;extSystemId=11"
                                         verb="GET">
                         <mutualAuth enabled="false">
                            <keyStore mode="file"/>
@@ -126,7 +134,7 @@
                         </mutualAuth>
                         <httpHeaders>
                            <header name="Accept">application/json</header>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
                      </restSimpleBinding>
                   </binding>
@@ -148,61 +156,98 @@
                        responseEncoding="">
                   <description>3.2.2 Create Person (Interface i619). CPD generates and returns a new personVinciId. **CPD requires at least one contract embedded directly in this call** (confirmed by a real 400 "The Contracts field is required" - the design doc's assumption of a separate follow-up Create/Update Contract call for the initial contract does not hold), so this action's input/body now includes the contract fields too; CreateOrUpdateContract remains a separate call only for the update path. Consumed by p_CreatePersonAndContract (build guide 4.8).</description>
                   <input>
-                     <parameter description="Dayforce EmployeeNumber"
+                     <parameter description=""
+                                label=""
+                                name="cpd_token"
+                                nogen="true"
+                                required="false"
+                                testWith="eyJvcmciOiI1YzNmMTJlMjQyMjYyM2E0ZjY1OTk4YmUiLCJpZCI6IjA3M2Q1ZWY1OGNiNTRiYzM5Njk3ZDFlYThhYTRhZmUzIiwiaCI6Im11cm11cjY0In0="
+                                type="string"/>
+                     <parameter description=""
+                                label=""
                                 name="EmployeeNumber"
+                                nogen="true"
                                 required="false"
+                                testWith="00998733"
                                 type="string"/>
-                     <parameter description="Dayforce LastName"
+                     <parameter description=""
+                                label=""
                                 name="LastName"
+                                nogen="true"
                                 required="false"
+                                testWith="Tester"
                                 type="string"/>
-                     <parameter description="Dayforce FirstName"
+                     <parameter description=""
+                                label=""
                                 name="FirstName"
+                                nogen="true"
                                 required="false"
+                                testWith="Test3r"
                                 type="string"/>
-                     <parameter description="Preferred last name, defaults to LastName if not set in Dayforce"
+                     <parameter description=""
+                                label=""
                                 name="PreferredLastName_or_LastName"
+                                nogen="true"
                                 required="false"
+                                testWith="Test24"
                                 type="string"/>
-                     <parameter description="Preferred first name, defaults to FirstName if not set in Dayforce"
+                     <parameter description=""
+                                label=""
                                 name="PreferredFirstName_or_FirstName"
+                                nogen="true"
                                 required="false"
+                                testWith="test5238"
                                 type="string"/>
-                     <parameter description="Dayforce BirthDate"
+                     <parameter description=""
+                                label=""
                                 name="BirthDate"
+                                nogen="true"
                                 required="false"
+                                testWith="1997-05-06"
                                 type="string"/>
-                     <parameter description="Dayforce SeniorityDate"
+                     <parameter description=""
+                                label=""
                                 name="SeniorityDate"
+                                nogen="true"
                                 required="false"
+                                testWith="1997-05-06"
                                 type="string"/>
-                     <parameter description="Dayforce culture/locale mapped to a CPD language ISO code"
+                     <parameter description=""
+                                label=""
                                 name="mapped_language_code"
+                                nogen="true"
                                 required="false"
+                                testWith="fr"
                                 type="string"/>
                      <parameter description="Dayforce HireDate - now required here since CPD requires a contract embedded in Create Person (see notes)"
                                 name="HireDate"
+                                nogen="true"
                                 required="false"
+                                testWith="2022-02-01"
                                 type="string"/>
                      <parameter description="Dayforce EmploymentStatus effective-to date"
                                 name="EmploymentStatus_EffectiveTo"
+                                nogen="true"
                                 required="false"
+                                testWith="2028-02-01"
                                 type="string"/>
                      <parameter description="Resolved CPD organizational unit id / legal entity id for this employee's Dayforce org (COR) - PLACEHOLDER, see Open Item 3"
                                 name="resolved_COR_ouId"
+                                nogen="true"
                                 required="false"
+                                testWith="3473"
                                 type="string"/>
                      <parameter description="Dayforce Job title"
                                 name="Job"
+                                nogen="true"
                                 required="false"
+                                testWith="IS Architect"
                                 type="string"/>
                      <parameter description="Dayforce primary work assignment ledger/cost-center code"
                                 name="Primary_Work_Assignment_Ledger_Code"
+                                nogen="true"
                                 required="false"
-                                type="string"/>
-                     <parameter description="CPD API bearer token"
-                                name="cpd_token"
-                                required="false"
+                                testWith="KO6.1234"
                                 type="string"/>
                   </input>
                   <binding>
@@ -215,7 +260,7 @@
                         </mutualAuth>
                         <httpHeaders>
                            <header name="Content-Type">application/json</header>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
                         <body>{
    "externalIdentifiers": [{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }],
@@ -309,7 +354,7 @@
                         </mutualAuth>
                         <httpHeaders>
                            <header name="Content-Type">application/json</header>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
                         <body>{
    "birthLastName": "{ $LastName }",
@@ -377,7 +422,7 @@
                         </mutualAuth>
                         <httpHeaders>
                            <header name="Content-Type">application/json</header>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
                         <body>{
    "startDate": "{ $HireDate }",
@@ -440,7 +485,7 @@
                         </mutualAuth>
                         <httpHeaders>
                            <header name="Content-Type">application/json</header>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
                         <body>{
    "phoneTypeCode": "{ $phoneTypeCode }",
@@ -497,7 +542,7 @@
                         </mutualAuth>
                         <httpHeaders>
                            <header name="Content-Type">application/json</header>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
                         <body>{
    "diallingCode": "{ $diallingCode }",
@@ -544,8 +589,31 @@
                            <keyStorePassword/>
                         </mutualAuth>
                         <httpHeaders>
-                           <header name="Authorization">Bearer {cpd_token}</header>
+                           <header name="Authorization">Bearer { $cpd_token }</header>
                         </httpHeaders>
+                     </restSimpleBinding>
+                  </binding>
+                  <output/>
+                  <responseProcessing enableMultipartParsing="false" processingType="AUTO"/>
+               </action>
+               <action category=""
+                       failOnError="true"
+                       forSearch="false"
+                       label="test"
+                       maxRedirects="100"
+                       name="test"
+                       preemptiveAuth="true"
+                       responseEncoding="">
+                  <description/>
+                  <input/>
+                  <binding>
+                     <restSimpleBinding multiUsing="semicolonSeparated"
+                                        url="curl -X GET &#34;https://api-tst.vinci-construction.net/hr/v1/persons?organizationalUnitIds=123454,67890&amp;amp;legalEntityIds=54321,98760&amp;amp;includeIncompleteRecords=false&amp;amp;lastName=chaitas&amp;amp;offset=0&amp;amp;limit=50&amp;amp;personVinciIds=01234567,09876543&amp;amp;contractFilters=current,upcoming&amp;amp;contractAdditionalViews=hrInformation&amp;amp;groupEntityIds=1122,3344&amp;amp;extOrganizationalUnitIds=MU5566,MU7788&amp;amp;extOrganizationalUnitSystemId=1&amp;amp;externalIdentifiers=SAP323,SAP8834&amp;amp;extSystemId=1&#34; -H &#34;accept: application/json&#34; -H &#34;Authorization: eyJvcmciOiI1YzNmMTJlMjQyMjYyM2E0ZjY1OTk4YmUiLCJpZCI6IjA3M2Q1ZWY1OGNiNTRiYzM5Njk3ZDFlYThhYTRhZmUzIiwiaCI6Im11cm11cjY0In0=&#34;&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;https://api-tst.vinci-construction.net/hr/v1/persons?organizationalUnitIds=123454,67890&amp;amp;legalEntityIds=54321,98760&amp;amp;includeIncompleteRecords=false&amp;amp;lastName=chaitas&amp;amp;offset=0&amp;amp;limit=50&amp;amp;personVinciIds=01234567,09876543&amp;amp;contractFilters=current,upcoming&amp;amp;contractAdditionalViews=hrInformation&amp;amp;groupEntityIds=1122,3344&amp;amp;extOrganizationalUnitIds=MU5566,MU7788&amp;amp;extOrganizationalUnitSystemId=1&amp;amp;externalIdentifiers=SAP323,SAP8834&amp;amp;extSystemId=1"
+                                        verb="GET">
+                        <mutualAuth enabled="false">
+                           <keyStore mode="file"/>
+                           <keyStorePassword/>
+                        </mutualAuth>
                      </restSimpleBinding>
                   </binding>
                   <output/>
@@ -558,5 +626,5 @@
       <types1:GUID>fpG58YCPVm0l9BZGk7R7ir</types1:GUID>
       <types1:DisplayName>sc-api-cpd</types1:DisplayName>
    </types1:Item>
-   <types1:CurrentServerDateTime>2026-08-01T20:50:06.365Z</types1:CurrentServerDateTime>
+   <types1:CurrentServerDateTime>2026-08-05T18:07:16.823Z</types1:CurrentServerDateTime>
 </aetgt:getResponse>
