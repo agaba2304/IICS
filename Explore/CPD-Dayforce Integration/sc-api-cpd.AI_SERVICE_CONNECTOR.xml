@@ -291,7 +291,8 @@
          "isSocialReportingManager": true,
          "professionCode": 15028,
          "staffCategoryCode": 1,
-         "employeePayrollSystemCode": 2
+         "employeePayrollSystemCode": 2,
+         "lineManager": {{ "managerVinciId": "04470043" }}
       }},
       "extraInformation": {{
          "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }",
