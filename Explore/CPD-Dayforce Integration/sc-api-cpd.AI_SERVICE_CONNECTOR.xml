@@ -146,7 +146,7 @@
                        name="CreatePerson"
                        preemptiveAuth="true"
                        responseEncoding="">
-                  <description>3.2.2 Create Person (Interface i619). CPD generates and returns a new personVinciId. Consumed by p_CreatePersonAndContract (build guide 4.8).</description>
+                  <description>3.2.2 Create Person (Interface i619). CPD generates and returns a new personVinciId. **CPD requires at least one contract embedded directly in this call** (confirmed by a real 400 "The Contracts field is required" - the design doc's assumption of a separate follow-up Create/Update Contract call for the initial contract does not hold), so this action's input/body now includes the contract fields too; CreateOrUpdateContract remains a separate call only for the update path. Consumed by p_CreatePersonAndContract (build guide 4.8).</description>
                   <input>
                      <parameter description="Dayforce EmployeeNumber"
                                 name="EmployeeNumber"
@@ -180,6 +180,26 @@
                                 name="mapped_language_code"
                                 required="false"
                                 type="string"/>
+                     <parameter description="Dayforce HireDate - now required here since CPD requires a contract embedded in Create Person (see notes)"
+                                name="HireDate"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce EmploymentStatus effective-to date"
+                                name="EmploymentStatus_EffectiveTo"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Resolved CPD organizational unit id / legal entity id for this employee's Dayforce org (COR) - PLACEHOLDER, see Open Item 3"
+                                name="resolved_COR_ouId"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce Job title"
+                                name="Job"
+                                required="false"
+                                type="string"/>
+                     <parameter description="Dayforce primary work assignment ledger/cost-center code"
+                                name="Primary_Work_Assignment_Ledger_Code"
+                                required="false"
+                                type="string"/>
                      <parameter description="CPD API bearer token"
                                 name="cpd_token"
                                 required="false"
@@ -198,16 +218,29 @@
                            <header name="Authorization">Bearer {cpd_token}</header>
                         </httpHeaders>
                         <body>{
-   "externalIdentifiers": [{ "extId": "{EmployeeNumber}", "extSystemId": 11 }],
-   "birthLastName": "{LastName}",
-   "birthFirstName": "{FirstName}",
-   "preferredLastName": "{PreferredLastName_or_LastName}",
-   "preferredFirstName": "{PreferredFirstName_or_FirstName}",
-   "birthDate": "{BirthDate}",
-   "salutationCode": "Undefined",
-   "groupEntryDate": "{SeniorityDate}",
-   "preferredLanguageIsoCode": "{mapped_language_code}",
-   "directoryDisplayMode": 1
+   "externalIdentifiers": [{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }],
+   "birthLastName": "{ $LastName }",
+   "birthFirstName": "{ $FirstName }",
+   "preferredLastName": "{ $PreferredLastName_or_LastName }",
+   "preferredFirstName": "{ $PreferredFirstName_or_FirstName }",
+   "birthDate": "{ $BirthDate }",
+   "salutationCode": 1,
+   "groupEntryDate": "{ $SeniorityDate }",
+   "preferredLanguageIsoCode": "{ $mapped_language_code }",
+   "directoryAvailability": 1,
+   "digitalIdentity": { "digitalIdentitySystemCode": 1, "validFrom": "{ $SeniorityDate }", "includeEmail": true },
+   "contracts": [{
+      "contractExtReferences": [{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }],
+      "startDate": "{ $HireDate }",
+      "endDate": "{ $EmploymentStatus_EffectiveTo }",
+      "staffTypeCode": 1,
+      "isLocalContract": false,
+      "contractTypeCode": 1,
+      "operationalJobTitle": "{ $Job }",
+      "organizationalUnitAssignment": { "ouId": "{ $resolved_COR_ouId }" },
+      "legalEntityAssignment": { "id": "{ $resolved_COR_ouId }", "idType": 2 },
+      "extraInformation": { "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }" }
+   }]
 }</body>
                      </restSimpleBinding>
                   </binding>
@@ -279,12 +312,12 @@
                            <header name="Authorization">Bearer {cpd_token}</header>
                         </httpHeaders>
                         <body>{
-   "birthLastName": "{LastName}",
-   "birthFirstName": "{FirstName}",
-   "preferredLastName": "{PreferredLastName_or_LastName}",
-   "preferredFirstName": "{PreferredFirstName_or_FirstName}",
-   "birthDate": "{BirthDate}",
-   "preferredLanguageIsoCode": "{mapped_language_code}"
+   "birthLastName": "{ $LastName }",
+   "birthFirstName": "{ $FirstName }",
+   "preferredLastName": "{ $PreferredLastName_or_LastName }",
+   "preferredFirstName": "{ $PreferredFirstName_or_FirstName }",
+   "birthDate": "{ $BirthDate }",
+   "preferredLanguageIsoCode": "{ $mapped_language_code }"
 }</body>
                      </restSimpleBinding>
                   </binding>
@@ -299,7 +332,7 @@
                        name="CreateOrUpdateContract"
                        preemptiveAuth="true"
                        responseEncoding="">
-                  <description>3.2.4 Create / Update Contract. Single PATCH endpoint used on both the Create and Update paths. OPEN ITEM (design doc): for a brand-new person CPD has not yet issued a contractId, so the Create path's contractId source needs client confirmation (e.g. CPD auto-creates a default contract on person creation, or contractId is client-supplied for upsert) - see Open Items. Consumed by p_CreatePersonAndContract and p_UpdatePersonAndContract (build guide 4.8-4.9).</description>
+                  <description>3.2.4 Create / Update Contract. PATCH endpoint against an existing contractId. **No longer used on the Create path** - confirmed against the live API that CPD's Create Person endpoint requires the initial contract embedded in the same request (see CreatePerson's description/notes), so this action is now only consumed by p_UpdatePersonAndContract for updating an existing contract (build guide 4.9).</description>
                   <input>
                      <parameter description="CPD VINCI ID for this person"
                                 name="personVinciId"
@@ -347,15 +380,15 @@
                            <header name="Authorization">Bearer {cpd_token}</header>
                         </httpHeaders>
                         <body>{
-   "startDate": "{HireDate}",
-   "endDate": "{EmploymentStatus_EffectiveTo}",
+   "startDate": "{ $HireDate }",
+   "endDate": "{ $EmploymentStatus_EffectiveTo }",
    "staffTypeCode": 1,
-   "contractTypeCode": "Permanent",
+   "contractTypeCode": 1,
    "isLocalContract": false,
-   "organizationalUnitAssignment": { "ouId": "{resolved_COR_ouId}" },
-   "operationalJobTitle": "{Job}",
-   "payrollJobTitle": "{Job}",
-   "costCenterCode": "{Primary_Work_Assignment_Ledger_Code}"
+   "organizationalUnitAssignment": { "ouId": "{ $resolved_COR_ouId }" },
+   "legalEntityAssignment": { "id": "{ $resolved_COR_ouId }", "idType": 2 },
+   "operationalJobTitle": "{ $Job }",
+   "extraInformation": { "costCenterCode": "{ $Primary_Work_Assignment_Ledger_Code }" }
 }</body>
                      </restSimpleBinding>
                   </binding>
@@ -410,9 +443,9 @@
                            <header name="Authorization">Bearer {cpd_token}</header>
                         </httpHeaders>
                         <body>{
-   "phoneTypeCode": "{phoneTypeCode}",
-   "diallingCode": "{diallingCode}",
-   "number": "{number}"
+   "phoneTypeCode": "{ $phoneTypeCode }",
+   "diallingCode": "{ $diallingCode }",
+   "number": "{ $number }"
 }</body>
                      </restSimpleBinding>
                   </binding>
@@ -467,8 +500,8 @@
                            <header name="Authorization">Bearer {cpd_token}</header>
                         </httpHeaders>
                         <body>{
-   "diallingCode": "{diallingCode}",
-   "number": "{number}"
+   "diallingCode": "{ $diallingCode }",
+   "number": "{ $number }"
 }</body>
                      </restSimpleBinding>
                   </binding>
