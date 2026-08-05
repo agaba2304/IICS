@@ -308,8 +308,7 @@
          "nonDigitalStaffEmailAddress": "tempworker1@manpower.com",
          "accountingUnitId": "string"
       }}
-   }}],
-   "auditTrail": {{ "creationUser": {{ "userId": "01234567", "userIdType": "vinciId" }}, "creationSourceCode": 1 }}
+   }}]
 }}</body>
                      </restSimpleBinding>
                   </binding>
