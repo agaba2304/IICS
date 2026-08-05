@@ -274,7 +274,7 @@
    "groupEntryDate": "{ $SeniorityDate }",
    "preferredLanguageIsoCode": "{ $mapped_language_code }",
    "directoryAvailability": 1,
-   "digitalIdentity": {{ "digitalIdentitySystemCode": 1, "validFrom": "{ fn:current-date() }", "includeEmail": true }},
+   "digitalIdentity": {{ "digitalIdentitySystemCode": 1, "validFrom": "{ fn:format-date(fn:current-date(), '[Y0001]-[M01]-[D01]') }", "includeEmail": true }},
    "contracts": [{{
       "contractExtReferences": [{{ "extId": "{ $EmployeeNumber }", "extSystemId": 11 }}],
       "startDate": "{ $HireDate }",
