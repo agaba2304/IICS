@@ -48,10 +48,16 @@
             </output>
             <tempFields>
                <field description="" name="tmp_access_token" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_RemainingXRefCodes" type="string"><options><option name="required">false</option></options></field>
+               <field description="Single XRefCode popped off tmp_RemainingXRefCodes via list:head() for the current loop iteration" name="tmp_CurrentXRefCode" type="string"><options><option name="required">false</option></options></field>
             </tempFields>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports fetched from public reference repositories during this build (Service/Assignment/Subflow/Decision-container/EventContainer structure) - see README_IICS_BUILD_NOTES.md for the full caveats and open-items list.
 
-Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in p_ProcessOneEmployee, not inline here, because IICS's loop-over-a-list mechanism is the runForEach flag on a &lt;subflow&gt; call, not a generic "repeat" step that can wrap an arbitrary multi-step sequence - so the per-employee body had to become its own sub-process to be loopable as a unit.
+Architecture note: the per-employee logic (get detail, search, create-or-update, phone reconciliation, fault handling) lives in p_ProcessOneEmployee, not inline here, so the per-employee body can be called once per changed XRefCode as a unit.
+
+LOOP MECHANISM CORRECTED: sf-processemployees previously used &lt;subflow runForEach="true"&gt; with its in_XRefCode input bound directly to output.out_ChangedXRefCodes (the whole list). That is not valid in real IICS Process Designer - runForEach/"Iteration Rule" only applies to Subprocess steps whose called process's "Applies To" is a queryable Process Object (a JDBC/Salesforce-style connection object with a Run-on-list-with-WHERE-condition setting), not a generic in-memory list built by an assignment. out_ChangedXRefCodes is a plain repeating string field, so it needs the same list:head()/list:tail() While-loop idiom used in p_ProcessOneEmployee for the phone lists (see that file's notes for the full explanation and Informatica KB references). asn-pophead-xrefcode below pops one XRefCode at a time off tmp_RemainingXRefCodes into the scalar tmp_CurrentXRefCode, which sf-processemployees now reads from instead of the raw list.
+
+REMAINING MANUAL STEP: as with p_ProcessOneEmployee, asn-pophead-xrefcode + sf-processemployees are not yet wrapped in an actual Loop/While step (no verified example of that element's XML was available to hand-author safely). After import, wrap that assignment/subflow pair in a Process Designer Loop step (type "While"), condition count($temp.tmp_RemainingXRefCodes) &gt; 0, and remove runForEach="true" from sf-processemployees since the Loop step now drives iteration.
 
 CPD auth note: no Dayforce-style "Get token" action exists for CPD in sc-api-cpd because the design doc leaves the CPD auth mechanism unconfirmed (section 4.1). in_CpdToken is a process input (secure parameter) until that is confirmed; if CPD turns out to need its own OAuth call, add a "Get CPD Token" action to sc-api-cpd mirroring the Dayforce pattern and call it here.
 
@@ -79,6 +85,7 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                <assignment id="asn-savetimestamp">
                   <title>Persist run timestamp</title>
                   <operation source="field" to="output.out_CurrentRunTimestamp">output.out_CurrentRunTimestamp</operation>
+                  <operation source="field" to="temp.tmp_RemainingXRefCodes">output.out_ChangedXRefCodes</operation>
                   <link id="xl03" targetId="svc-dftoken"/>
                </assignment>
                <service id="svc-dftoken">
@@ -94,15 +101,25 @@ LastRunTimestamp persistence: this process takes it as an input and emits out_Cu
                <assignment id="asn-savetoken">
                   <title>Save token</title>
                   <operation source="field" to="temp.tmp_access_token">output.access_token</operation>
-                  <link id="xl05" targetId="sf-processemployees"/>
+                  <link id="xl05" targetId="asn-pophead-xrefcode"/>
+               </assignment>
+               <assignment id="asn-pophead-xrefcode">
+                  <title>Pop next XRefCode off the changed-employee list (list:head/list:tail - wrap this + sf-processemployees in a Loop/While step, see notes)</title>
+                  <operation source="formula" to="temp.tmp_CurrentXRefCode">
+                     <expression language="XQuery">list:head($temp.tmp_RemainingXRefCodes)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_RemainingXRefCodes">
+                     <expression language="XQuery">list:tail($temp.tmp_RemainingXRefCodes)</expression>
+                  </operation>
+                  <link id="xl05b" targetId="sf-processemployees"/>
                </assignment>
                <subflow id="sf-processemployees">
-                  <title>Process each changed employee (once per out_ChangedXRefCodes entry)</title>
+                  <title>Process one changed employee (current head of the list)</title>
                   <subflowGUID>aw0FVD6pWhobtQh5uL0Ou8</subflowGUID>
                   <subflowPath>p_ProcessOneEmployee</subflowPath>
-                  <runForEach>true</runForEach>
+                  <runForEach>false</runForEach>
                   <input>
-                     <parameter name="in_XRefCode" source="field" updatable="true">output.out_ChangedXRefCodes</parameter>
+                     <parameter name="in_XRefCode" source="field" updatable="true">temp.tmp_CurrentXRefCode</parameter>
                      <parameter name="in_access_token" source="field" updatable="true">temp.tmp_access_token</parameter>
                      <parameter name="in_cpd_token" source="field" updatable="true">input.in_CpdToken</parameter>
                   </input>

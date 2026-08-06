@@ -54,12 +54,24 @@
                <field description="" name="tmp_PhonesToAdd" type="xml"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_PhonesToUpdate" type="xml"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_PhonesToDelete" type="xml"><options><option name="required">false</option></options></field>
+               <field description="Single &lt;phone&gt; item popped off tmp_PhonesToAdd via list:head() for the current loop iteration" name="tmp_CurrentPhoneToAdd" type="xml"><options><option name="required">false</option></options></field>
+               <field description="Single &lt;phone&gt; item popped off tmp_PhonesToUpdate via list:head() for the current loop iteration" name="tmp_CurrentPhoneToUpdate" type="xml"><options><option name="required">false</option></options></field>
+               <field description="Single &lt;phone&gt; item popped off tmp_PhonesToDelete via list:head() for the current loop iteration" name="tmp_CurrentPhoneToDelete" type="xml"><options><option name="required">false</option></options></field>
             </tempFields>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md for the full open-items list and schema caveats.
 
 FAULT HANDLING REMOVED (build guide 4.13, not yet re-added): this process originally wrapped the whole body below in an &lt;eventContainer&gt; with a &lt;catch&gt; routing to p_ErrorAlert on any fault. On import, that step rendered as a blank/un-typed "name:" placeholder stuck in "Validation in progress" - the same symptom seen earlier in this build whenever an element name isn't recognized. Every real IICS export found during this build only ever showed &lt;eventContainer&gt; watching a single activity (one subflow or service call), never a whole multi-step sequence like this one - so that was always flagged as the lowest-confidence part of this file, and it turned out to be wrong. Removed entirely rather than guess a third time; add fault handling back manually in Process Designer once this imports cleanly (most designers expose a per-step or wrap-in-scope "Add Exception/Fault Handler" action in the palette/right-click menu - use that instead of hand-authored XML for this piece). p_ErrorAlert (which formats the alert message) is unaffected and still importable/callable on its own; it's just not wired into this process's error path yet.
 
-LOWEST-CONFIDENCE PART OF THIS FILE NOW: the three phone reconciliation steps (sf-addphones/sf-updatephones/sf-deletephones) use &lt;subflow runForEach="true"&gt; to call p_AddPhoneNumber/p_UpdatePhoneNumber/p_DeletePhoneNumber once per entry in tmp_PhonesToAdd/Update/Delete. Every real IICS export found while researching this schema had runForEach=false; no populated runForEach=true example was available to confirm exactly how per-item field binding works when it's true. Re-check this in Process Designer's own "Repeat"/loop configuration UI after import and correct the binding if needed - the intent (call the phone sub-process once per list entry) is documented here even if the exact XML wiring needs adjustment.
+RESOLVED (previously "lowest-confidence part of this file"): the earlier &lt;subflow runForEach="true"&gt; with a direct XPath into the list field (e.g. temp.tmp_PhonesToAdd/phoneTypeCode) is not valid - it is what caused Process Designer's "the source field ... is undefined" validation error on the Add/Update/Delete phones steps. Confirmed against Informatica's own documentation and KB: the runForEach/"Iteration Rule" flag on a Subprocess step only applies when the called process's "Applies To" is set to a queryable Process Object (e.g. a JDBC or Salesforce connection's business object) with a Run-on-list-with-WHERE-condition setting - it is NOT a general "loop over any in-memory list" mechanism, and it cannot bind a scalar input parameter to "child of a list field" the way this file originally assumed.
+
+For an arbitrary list built in-process by XQuery (which is what tmp_PhonesToAdd/Update/Delete are), Informatica's documented pattern is a native Loop step (While type) driven by the list:head()/list:tail() extension functions - which is exactly the unused xmlns:list="urn:activevos:spi:list:functions" namespace already declared on the &lt;process&gt; element of every file in this build. The idiom (per Informatica KB "Create a loop to iterate over any list in CAI" and the "Head and Tail Functions" pattern):
+  let current := list:head(list)
+  let list := list:tail(list)
+repeated while the list is non-empty.
+
+This file now implements that: each of sf-addphones/sf-updatephones/sf-deletephones is preceded by an assignment (asn-pophead-*) that pops one item off the corresponding list into a scalar tmp_CurrentPhoneTo* field via list:head(), then re-assigns the list field itself to list:tail() of itself so the next pass processes the next entry. The subflow's per-phone inputs now read from that scalar current-item field instead of the raw list.
+
+REMAINING MANUAL STEP - could not be safely hand-authored: no real IICS Process Designer 11 export containing a populated Loop/While step was available to confirm the exact &lt;loop&gt;/&lt;while&gt; XML element name and attributes for this avosScreenflow.xsd dialect, and guessing that tag would repeat the same mistake this note is fixing. So the asn-pophead-* + subflow pairs below are NOT yet wrapped in a loop - as exported they each run exactly once per p_ProcessOneEmployee execution (i.e. handle only the first entry in each list). After import, in Process Designer's palette drag a Loop step (type "While") around each asn-pophead-*/sf-* pair, set its condition to something like count($temp.tmp_PhonesToAdd/*) > 0 (swap the field name for Update/Delete), and remove the runForEach="true" attribute from the wrapped subflow call (the Loop step is now what drives iteration, not the subflow itself).
 
 Phone comparison (dp-comparephones): tmp_Contacts field names (ContactType/ContactDetail) and the Dayforce-contact-type-to-CPD-phoneTypeCode mapping are placeholders - no sample of the expanded Contacts.Items shape was available (see design doc Open Item on phone type code mapping, section 3.2.5).</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
@@ -226,49 +238,79 @@ return $p</expression>
 where empty($temp.tmp_DayforcePhones/*[phoneTypeCode/text() = $e/phoneTypeCode/text()])
 return $e</expression>
                   </operation>
-                  <link id="l14" targetId="sf-addphones"/>
+                  <link id="l14" targetId="asn-pophead-add"/>
+               </assignment>
+               <assignment id="asn-pophead-add">
+                  <title>Pop next entry off PhonesToAdd (list:head/list:tail - wrap this + sf-addphones in a Loop/While step, see notes)</title>
+                  <operation source="formula" to="temp.tmp_CurrentPhoneToAdd">
+                     <expression language="XQuery">list:head($temp.tmp_PhonesToAdd)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_PhonesToAdd">
+                     <expression language="XQuery">list:tail($temp.tmp_PhonesToAdd)</expression>
+                  </operation>
+                  <link id="l14b" targetId="sf-addphones"/>
                </assignment>
                <subflow id="sf-addphones">
-                  <title>Add phones (once per PhonesToAdd entry)</title>
+                  <title>Add one phone (current head of PhonesToAdd)</title>
                   <subflowGUID>l9dSmhTuTIffT30huW5QsB</subflowGUID>
                   <subflowPath>p_AddPhoneNumber</subflowPath>
-                  <runForEach>true</runForEach>
+                  <runForEach>false</runForEach>
                   <input>
                      <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
                      <parameter name="in_contractId" source="field" updatable="true">temp.tmp_ActiveContractId</parameter>
-                     <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_PhonesToAdd/phoneTypeCode</parameter>
-                     <parameter name="in_diallingCode" source="field" updatable="true">temp.tmp_PhonesToAdd/diallingCode</parameter>
-                     <parameter name="in_number" source="field" updatable="true">temp.tmp_PhonesToAdd/number</parameter>
+                     <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_CurrentPhoneToAdd/phoneTypeCode</parameter>
+                     <parameter name="in_diallingCode" source="field" updatable="true">temp.tmp_CurrentPhoneToAdd/diallingCode</parameter>
+                     <parameter name="in_number" source="field" updatable="true">temp.tmp_CurrentPhoneToAdd/number</parameter>
                      <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
                   </input>
                   <outputDef/>
-                  <link id="l15" targetId="sf-updatephones"/>
+                  <link id="l15" targetId="asn-pophead-update"/>
                </subflow>
+               <assignment id="asn-pophead-update">
+                  <title>Pop next entry off PhonesToUpdate (list:head/list:tail - wrap this + sf-updatephones in a Loop/While step, see notes)</title>
+                  <operation source="formula" to="temp.tmp_CurrentPhoneToUpdate">
+                     <expression language="XQuery">list:head($temp.tmp_PhonesToUpdate)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_PhonesToUpdate">
+                     <expression language="XQuery">list:tail($temp.tmp_PhonesToUpdate)</expression>
+                  </operation>
+                  <link id="l15b" targetId="sf-updatephones"/>
+               </assignment>
                <subflow id="sf-updatephones">
-                  <title>Update phones (once per PhonesToUpdate entry)</title>
+                  <title>Update one phone (current head of PhonesToUpdate)</title>
                   <subflowGUID>06iBdoGBgpwd5YRixGqFEb</subflowGUID>
                   <subflowPath>p_UpdatePhoneNumber</subflowPath>
-                  <runForEach>true</runForEach>
+                  <runForEach>false</runForEach>
                   <input>
                      <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
                      <parameter name="in_contractId" source="field" updatable="true">temp.tmp_ActiveContractId</parameter>
-                     <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_PhonesToUpdate/phoneTypeCode</parameter>
-                     <parameter name="in_diallingCode" source="field" updatable="true">temp.tmp_PhonesToUpdate/diallingCode</parameter>
-                     <parameter name="in_number" source="field" updatable="true">temp.tmp_PhonesToUpdate/number</parameter>
+                     <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_CurrentPhoneToUpdate/phoneTypeCode</parameter>
+                     <parameter name="in_diallingCode" source="field" updatable="true">temp.tmp_CurrentPhoneToUpdate/diallingCode</parameter>
+                     <parameter name="in_number" source="field" updatable="true">temp.tmp_CurrentPhoneToUpdate/number</parameter>
                      <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
                   </input>
                   <outputDef/>
-                  <link id="l16" targetId="sf-deletephones"/>
+                  <link id="l16" targetId="asn-pophead-delete"/>
                </subflow>
+               <assignment id="asn-pophead-delete">
+                  <title>Pop next entry off PhonesToDelete (list:head/list:tail - wrap this + sf-deletephones in a Loop/While step, see notes)</title>
+                  <operation source="formula" to="temp.tmp_CurrentPhoneToDelete">
+                     <expression language="XQuery">list:head($temp.tmp_PhonesToDelete)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_PhonesToDelete">
+                     <expression language="XQuery">list:tail($temp.tmp_PhonesToDelete)</expression>
+                  </operation>
+                  <link id="l16b" targetId="sf-deletephones"/>
+               </assignment>
                <subflow id="sf-deletephones">
-                  <title>Delete phones (once per PhonesToDelete entry)</title>
+                  <title>Delete one phone (current head of PhonesToDelete)</title>
                   <subflowGUID>4z444EUFompiGRMGDU2iwt</subflowGUID>
                   <subflowPath>p_DeletePhoneNumber</subflowPath>
-                  <runForEach>true</runForEach>
+                  <runForEach>false</runForEach>
                   <input>
                      <parameter name="in_personVinciId" source="field" updatable="true">temp.tmp_ActivePersonVinciId</parameter>
                      <parameter name="in_contractId" source="field" updatable="true">temp.tmp_ActiveContractId</parameter>
-                     <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_PhonesToDelete/phoneTypeCode</parameter>
+                     <parameter name="in_phoneTypeCode" source="field" updatable="true">temp.tmp_CurrentPhoneToDelete/phoneTypeCode</parameter>
                      <parameter name="in_cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
                   </input>
                   <outputDef/>
