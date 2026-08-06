@@ -75,10 +75,15 @@
                <field description="" name="tmp_PreferredLastName" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_mapped_language_code" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_resolved_COR_ouId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_HireDate" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_EmploymentStatus_EffectiveTo" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_Job" type="string"><options><option name="required">false</option></options></field>
             </tempFields>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md.
 
 ARCHITECTURE CHANGE (confirmed against the live CPD API): the design doc assumed Create Person (3.2.2) and Create/Update Contract (3.2.4) were two separate calls, with the contract created afterward against the personVinciId Create Person returns. A real test call proved this wrong - CPD's Create Person endpoint returns a 400 ("The Contracts field is required") unless a contracts array is embedded directly in the same request. So this process now makes a single CreatePerson call carrying both person and contract fields; CreateOrUpdateContract (svc-createcontract) is no longer called on this path. It's still used by p_UpdatePersonAndContract for the update path, which is unaffected.
+
+VALIDATION FIX: Process Designer rejected direct inline XPaths into in_ActiveWorkContract (e.g. input.in_ActiveWorkContract/startDate) as a Service step's serviceInput source - "the source field ... is undefined", since in_ActiveWorkContract is declared as untyped xml with no known sub-schema for the validator to resolve against. Fixed by extracting startDate/endDate/operationalJobTitle into their own declared temp fields (tmp_HireDate/tmp_EmploymentStatus_EffectiveTo/tmp_Job) via XQuery formula assignments first, then referencing those temp fields in serviceInput - the same pattern tmp_resolved_COR_ouId already used.
 
 OPEN ITEMS carried from the design doc (unresolved there too, not introduced by this build):
 1) resolved_COR_ouId - mapping Dayforce HomeOrganization.LedgerCode to a CPD organizationalUnitAssignment.ouId (and now also legalEntityAssignment.id, per the confirmed Create Person contract schema) requires a client-supplied cross-reference table. The assignment below is a placeholder passthrough of the Dayforce ledger code into both fields and MUST be replaced with real lookups before this can create a valid contract.
@@ -106,6 +111,15 @@ OPEN ITEMS carried from the design doc (unresolved there too, not introduced by 
                   <operation source="formula" to="temp.tmp_resolved_COR_ouId">
                      <expression language="XQuery">$input.in_HomeOrgLedgerCode</expression>
                   </operation>
+                  <operation source="formula" to="temp.tmp_HireDate">
+                     <expression language="XQuery">string($input.in_ActiveWorkContract/startDate)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_EmploymentStatus_EffectiveTo">
+                     <expression language="XQuery">string($input.in_ActiveWorkContract/endDate)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_Job">
+                     <expression language="XQuery">string($input.in_ActiveWorkContract/operationalJobTitle)</expression>
+                  </operation>
                   <link id="l2" targetId="svc-createperson"/>
                </assignment>
                <service id="svc-createperson">
@@ -121,10 +135,10 @@ OPEN ITEMS carried from the design doc (unresolved there too, not introduced by 
                      <parameter name="BirthDate" source="field" updatable="true">input.in_BirthDate</parameter>
                      <parameter name="SeniorityDate" source="field" updatable="true">input.in_SeniorityDate</parameter>
                      <parameter name="mapped_language_code" source="field" updatable="true">temp.tmp_mapped_language_code</parameter>
-                     <parameter name="HireDate" source="field" updatable="true">input.in_ActiveWorkContract/startDate</parameter>
-                     <parameter name="EmploymentStatus_EffectiveTo" source="field" updatable="true">input.in_ActiveWorkContract/endDate</parameter>
+                     <parameter name="HireDate" source="field" updatable="true">temp.tmp_HireDate</parameter>
+                     <parameter name="EmploymentStatus_EffectiveTo" source="field" updatable="true">temp.tmp_EmploymentStatus_EffectiveTo</parameter>
                      <parameter name="resolved_COR_ouId" source="field" updatable="true">temp.tmp_resolved_COR_ouId</parameter>
-                     <parameter name="Job" source="field" updatable="true">input.in_ActiveWorkContract/operationalJobTitle</parameter>
+                     <parameter name="Job" source="field" updatable="true">temp.tmp_Job</parameter>
                      <parameter name="Primary_Work_Assignment_Ledger_Code" source="field" updatable="true">input.in_HomeOrgLedgerCode</parameter>
                      <parameter name="cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
                   </serviceInput>

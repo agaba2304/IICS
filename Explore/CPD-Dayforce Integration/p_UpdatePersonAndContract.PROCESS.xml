@@ -67,8 +67,13 @@
                <field description="" name="tmp_PreferredLastName" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_mapped_language_code" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_resolved_COR_ouId" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_HireDate" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_EmploymentStatus_EffectiveTo" type="string"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_Job" type="string"><options><option name="required">false</option></options></field>
             </tempFields>
-            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md. Shares the same Open Item on resolved_COR_ouId as p_CreatePersonAndContract (client org cross-reference table pending); the assignment below is a passthrough placeholder, not a real lookup.</notes>
+            <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md. Shares the same Open Item on resolved_COR_ouId as p_CreatePersonAndContract (client org cross-reference table pending); the assignment below is a passthrough placeholder, not a real lookup.
+
+VALIDATION FIX (mirrors the same fix in p_CreatePersonAndContract): Process Designer rejects direct inline XPaths into in_ActiveWorkContract (e.g. input.in_ActiveWorkContract/startDate) as a Service step's serviceInput source - "the source field ... is undefined", since in_ActiveWorkContract is untyped xml with no known sub-schema for the validator to resolve against. Fixed by extracting startDate/endDate/operationalJobTitle into declared temp fields (tmp_HireDate/tmp_EmploymentStatus_EffectiveTo/tmp_Job) via XQuery formula assignments first, then referencing those in serviceInput.</notes>
             <deployment skipIfRunning="false" suspendOnFault="false" tracingLevel="none">
                <rest/>
             </deployment>
@@ -89,6 +94,15 @@
                   </operation>
                   <operation source="formula" to="temp.tmp_resolved_COR_ouId">
                      <expression language="XQuery">$input.in_HomeOrgLedgerCode</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_HireDate">
+                     <expression language="XQuery">string($input.in_ActiveWorkContract/startDate)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_EmploymentStatus_EffectiveTo">
+                     <expression language="XQuery">string($input.in_ActiveWorkContract/endDate)</expression>
+                  </operation>
+                  <operation source="formula" to="temp.tmp_Job">
+                     <expression language="XQuery">string($input.in_ActiveWorkContract/operationalJobTitle)</expression>
                   </operation>
                   <link id="l2" targetId="svc-updateperson"/>
                </assignment>
@@ -115,10 +129,10 @@
                   <serviceInput>
                      <parameter name="personVinciId" source="field" updatable="true">input.in_personVinciId</parameter>
                      <parameter name="contractId" source="field" updatable="true">input.in_ExistingContractId</parameter>
-                     <parameter name="HireDate" source="field" updatable="true">input.in_ActiveWorkContract/startDate</parameter>
-                     <parameter name="EmploymentStatus_EffectiveTo" source="field" updatable="true">input.in_ActiveWorkContract/endDate</parameter>
+                     <parameter name="HireDate" source="field" updatable="true">temp.tmp_HireDate</parameter>
+                     <parameter name="EmploymentStatus_EffectiveTo" source="field" updatable="true">temp.tmp_EmploymentStatus_EffectiveTo</parameter>
                      <parameter name="resolved_COR_ouId" source="field" updatable="true">temp.tmp_resolved_COR_ouId</parameter>
-                     <parameter name="Job" source="field" updatable="true">input.in_ActiveWorkContract/operationalJobTitle</parameter>
+                     <parameter name="Job" source="field" updatable="true">temp.tmp_Job</parameter>
                      <parameter name="Primary_Work_Assignment_Ledger_Code" source="field" updatable="true">input.in_HomeOrgLedgerCode</parameter>
                      <parameter name="cpd_token" source="field" updatable="true">input.in_cpd_token</parameter>
                   </serviceInput>
