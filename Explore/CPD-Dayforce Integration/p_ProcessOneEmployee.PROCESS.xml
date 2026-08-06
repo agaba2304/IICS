@@ -50,10 +50,10 @@
                <field description="" name="tmp_NewContractId" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_ActivePersonVinciId" type="string"><options><option name="required">false</option></options></field>
                <field description="" name="tmp_ActiveContractId" type="string"><options><option name="required">false</option></options></field>
-               <field description="" name="tmp_DayforcePhones" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
-               <field description="" name="tmp_PhonesToAdd" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
-               <field description="" name="tmp_PhonesToUpdate" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
-               <field description="" name="tmp_PhonesToDelete" type="string"><options><option name="multiSelect">true</option><option name="required">false</option></options></field>
+               <field description="" name="tmp_DayforcePhones" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_PhonesToAdd" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_PhonesToUpdate" type="xml"><options><option name="required">false</option></options></field>
+               <field description="" name="tmp_PhonesToDelete" type="xml"><options><option name="required">false</option></options></field>
             </tempFields>
             <notes>Hand-authored against the CPD-Dayforce Functional Design &amp; API Build Guide v1.0 and verified against real IICS Process Designer 11 exports - see README_IICS_BUILD_NOTES.md for the full open-items list and schema caveats.
 
